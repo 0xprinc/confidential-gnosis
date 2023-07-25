@@ -24,6 +24,7 @@ if (!infuraApiKey) {
 }
 
 const chainIds = {
+  zama: 8009,
   "arbitrum-mainnet": 42161,
   avalanche: 43114,
   bsc: 56,
@@ -39,6 +40,9 @@ const chainIds = {
 function getChainConfig(chain: keyof typeof chainIds): NetworkUserConfig {
   let jsonRpcUrl: string;
   switch (chain) {
+    case "zama":
+      jsonRpcUrl = "https://devnet.zama.ai/";
+      break;
     case "avalanche":
       jsonRpcUrl = "https://api.avax.network/ext/bc/C/rpc";
       break;
@@ -60,7 +64,7 @@ function getChainConfig(chain: keyof typeof chainIds): NetworkUserConfig {
 }
 
 const config: HardhatUserConfig = {
-  defaultNetwork: "hardhat",
+  defaultNetwork: "zama",
   namedAccounts: {
     deployer: 0,
   },
@@ -104,6 +108,7 @@ const config: HardhatUserConfig = {
     "polygon-mainnet": getChainConfig("polygon-mainnet"),
     "polygon-mumbai": getChainConfig("polygon-mumbai"),
     sepolia: getChainConfig("sepolia"),
+    zama: getChainConfig("zama"),
   },
   paths: {
     artifacts: "./artifacts",

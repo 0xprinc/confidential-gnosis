@@ -18,7 +18,7 @@ describe("Unit tests", function () {
       const contract = await deployEncryptedERC20Fixture();
       this.contractAddress = await contract.getAddress();
       this.erc20 = contract;
-      const fhevmjs = await getInstance(this.contractAddress);
+      const fhevmjs = await getInstance(this.contractAddress, ethers);
       this.fhevmjs = fhevmjs;
     });
 

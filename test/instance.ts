@@ -1,9 +1,9 @@
 import { FhevmInstance, createInstance } from "fhevmjs";
-import { ethers } from "hardhat";
+import { ethers as hethers } from "hardhat";
 
 let instance: FhevmInstance;
 
-export const getInstance = async (contractAddress: string) => {
+export const getInstance = async (contractAddress: string, ethers: typeof hethers) => {
   if (instance) return instance;
 
   // 1. Get chain id
@@ -17,12 +17,12 @@ export const getInstance = async (contractAddress: string) => {
   // Create instance
   instance = await createInstance({ chainId, publicKey });
 
-  await generateToken(contractAddress);
+  await generateToken(contractAddress, ethers);
 
   return instance;
 };
 
-const generateToken = async (contractAddress: string) => {
+const generateToken = async (contractAddress: string, ethers: typeof hethers) => {
   // Generate token to decrypt
   const generatedToken = instance.generateToken({
     verifyingContract: contractAddress,

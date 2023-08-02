@@ -71,31 +71,7 @@ Before being able to run any command, you need to create a `.env` file and set a
 Then, proceed with installing dependencies:
 
 ```sh
-$ pnpm install
-```
-
-### Compile
-
-Compile the smart contracts with Hardhat:
-
-```sh
-$ pnpm compile
-```
-
-### TypeChain
-
-Compile the smart contracts and generate TypeChain bindings:
-
-```sh
-$ pnpm typechain
-```
-
-### List accounts
-
-From the mnemonic in .env file, list all the derived Ethereum adresses:
-
-```sh
-$ pnpm task:accounts
+pnpm install
 ```
 
 ### Start fhevm
@@ -106,14 +82,37 @@ deploy FHE encrypted smart contracts
 ```sh
 # In one terminal, keep it opened
 # The node logs are printed
-$ pnpm fhevm:start
+pnpm fhevm:start
 ```
 
-If you get an error message that the container is used:
+To stop ^C or:
 ```sh
-# In one terminal, keep it opened
-# The node logs are printed
-$ pnpm fhevm:restart
+pnpm fhevm:stop
+```
+
+
+### Compile
+
+Compile the smart contracts with Hardhat:
+
+```sh
+pnpm compile
+```
+
+### TypeChain
+
+Compile the smart contracts and generate TypeChain bindings:
+
+```sh
+pnpm typechain
+```
+
+### List accounts
+
+From the mnemonic in .env file, list all the derived Ethereum adresses:
+
+```sh
+pnpm task:accounts
 ```
 
 ### Get some native coins
@@ -122,7 +121,7 @@ In order to interact with the blockchain, one need some coins.
 This command will give coins to the first address derived from the mnemonic in .env file.
 
 ```sh
-$ pnpm fhevm:faucet
+pnpm fhevm:faucet
 ```
 
 <br />
@@ -131,7 +130,7 @@ $ pnpm fhevm:faucet
 <br />
 
 ```sh
-$ pnpm task:getEthereumAddress
+pnpm task:getEthereumAddress
 ```
 </details>
 <br />
@@ -140,19 +139,27 @@ $ pnpm task:getEthereumAddress
 
 ### Deploy
 
-Deploy the contracts to Hardhat Network:
+Deploy the ERC20 to local network:
 
 ```sh
-$ pnpm deploy:contracts
+pnpm deploy:contracts
 ```
-Note: by default, the local network is used. 
+Note: by default, the local network is used. One can change the network, check [hardhat config file](./hardhat.config.ts).
+
+#### Mint
+
+Run the `mint` task on the local network:
+
+```sh
+pnpm task:mint --network local --mint 1000 --account 0
+```
 
 ### Test
 
 Run the tests with Hardhat:
 
 ```sh
-$ pnpm test
+pnpm test
 ```
 
 ### Lint Solidity
@@ -160,7 +167,7 @@ $ pnpm test
 Lint the Solidity code:
 
 ```sh
-$ pnpm lint:sol
+pnpm lint:sol
 ```
 
 ### Lint TypeScript
@@ -168,7 +175,7 @@ $ pnpm lint:sol
 Lint the TypeScript code:
 
 ```sh
-$ pnpm lint:ts
+pnpm lint:ts
 ```
 
 ### Coverage
@@ -176,7 +183,7 @@ $ pnpm lint:ts
 Generate the code coverage report:
 
 ```sh
-$ pnpm coverage
+pnpm coverage
 ```
 
 ### Report Gas
@@ -184,7 +191,7 @@ $ pnpm coverage
 See the gas usage per unit test and average gas per method call:
 
 ```sh
-$ REPORT_GAS=true pnpm test
+REPORT_GAS=true pnpm test
 ```
 
 ### Clean
@@ -192,7 +199,7 @@ $ REPORT_GAS=true pnpm test
 Delete the smart contract artifacts, the coverage reports and the Hardhat cache:
 
 ```sh
-$ pnpm clean
+pnpm clean
 ```
 
 ### Tasks
@@ -204,16 +211,9 @@ $ pnpm clean
 Deploy a new instance of the EncryptedERC20 contract via a task:
 
 ```sh
-$ pnpm task:deployEncryptedERC20 --network zama
+pnpm task:deployEncryptedERC20 --network zama
 ```
 
-#### Mint
-
-Run the `mint` task on the Zama network:
-
-```sh
-$ pnpm task:mint --network zama --mint 1000 --account 3
-```
 
 ## Tips
 

@@ -66,9 +66,7 @@ You can edit the CI script in [.github/workflows/ci.yml](./.github/workflows/ci.
 
 ### Pre Requisites
 
-Before being able to run any command, you need to create a `.env` file and set a BIP-39 compatible mnemonic as an
-environment variable. You can follow the example in `.env.example`. If you don't already have a mnemonic, you can use
-this [website](https://iancoleman.io/bip39/) to generate one.
+Before being able to run any command, you need to create a `.env` file and set a BIP-39 compatible mnemonic as an environment variable. You can follow the example in `.env.example`. If you don't already have a mnemonic, you can use this [website](https://iancoleman.io/bip39/) to generate one.
 
 Then, proceed with installing dependencies:
 
@@ -91,6 +89,48 @@ Compile the smart contracts and generate TypeChain bindings:
 ```sh
 $ pnpm typechain
 ```
+
+### Start fhevm
+
+Start a local fhevm docker container that inlcudes everything needed to 
+deploy FHE encrypted smart contracts
+
+```sh
+# In one terminal, keep it opened
+# The node logs are printed
+$ pnpm fhevm:start
+```
+
+If you get an error message that the container is used:
+```sh
+# In one terminal, keep it opened
+# The node logs are printed
+$ pnpm fhevm:restart
+```
+
+### Get some native coins
+
+In order to interact with the blockchain, one need some coins.
+This command will give coins to the address corresponding to mnemonic in .env file.
+
+```sh
+$ pnpm fhevm:faucet
+```
+
+To get the first derived address from mnemonic:
+
+```sh
+$ pnpm task:task:getEthereumAddress
+```
+
+### Deploy
+
+Deploy the contracts to Hardhat Network:
+
+```sh
+$ pnpm deploy:contracts
+```
+Note: by default, the local network is used. 
 
 ### Test
 
@@ -140,17 +180,11 @@ Delete the smart contract artifacts, the coverage reports and the Hardhat cache:
 $ pnpm clean
 ```
 
-### Deploy
-
-Deploy the contracts to Hardhat Network:
-
-```sh
-$ pnpm deploy:contracts"
-```
-
 ### Tasks
 
 #### Deploy EncryptedERC20
+
+[TODO]: this command does not work on my side, please check it!
 
 Deploy a new instance of the EncryptedERC20 contract via a task:
 

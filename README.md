@@ -66,7 +66,9 @@ You can edit the CI script in [.github/workflows/ci.yml](./.github/workflows/ci.
 
 ### Pre Requisites
 
-Before being able to run any command, you need to create a `.env` file and set a BIP-39 compatible mnemonic as an environment variable. You can follow the example in `.env.example`. If you don't already have a mnemonic, you can use this [website](https://iancoleman.io/bip39/) to generate one.
+Before being able to run any command, you need to create a `.env` file and set a BIP-39 compatible mnemonic as an
+environment variable. You can follow the example in `.env.example`. If you don't already have a mnemonic, you can use
+this [website](https://iancoleman.io/bip39/) to generate one.
 
 Then, proceed with installing dependencies:
 
@@ -76,8 +78,7 @@ pnpm install
 
 ### Start fhevm
 
-Start a local fhevm docker container that inlcudes everything needed to 
-deploy FHE encrypted smart contracts
+Start a local fhevm docker container that inlcudes everything needed to deploy FHE encrypted smart contracts
 
 ```sh
 # In one terminal, keep it opened
@@ -86,10 +87,10 @@ pnpm fhevm:start
 ```
 
 To stop ^C or:
+
 ```sh
 pnpm fhevm:stop
 ```
-
 
 ### Compile
 
@@ -117,8 +118,8 @@ pnpm task:accounts
 
 ### Get some native coins
 
-In order to interact with the blockchain, one need some coins.
-This command will give coins to the first address derived from the mnemonic in .env file.
+In order to interact with the blockchain, one need some coins. This command will give coins to the first address derived
+from the mnemonic in .env file.
 
 ```sh
 pnpm fhevm:faucet
@@ -132,10 +133,9 @@ pnpm fhevm:faucet
 ```sh
 pnpm task:getEthereumAddress
 ```
+
 </details>
 <br />
-
-
 
 ### Deploy
 
@@ -144,7 +144,9 @@ Deploy the ERC20 to local network:
 ```sh
 pnpm deploy:contracts
 ```
-Note: by default, the local network is used. One can change the network, check [hardhat config file](./hardhat.config.ts).
+
+Note: by default, the local network is used. One can change the network, check
+[hardhat config file](./hardhat.config.ts).
 
 #### Mint
 
@@ -213,7 +215,6 @@ Deploy a new instance of the EncryptedERC20 contract via a task:
 ```sh
 pnpm task:deployEncryptedERC20 --network zama
 ```
-
 
 ## Tips
 

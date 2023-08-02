@@ -80,7 +80,7 @@
     "task:getEthereumAddress": "hardhat task:getEthereumAddress",
     "test": "hardhat test",
     "typechain": "cross-env TS_NODE_TRANSPILE_ONLY=true hardhat typechain",
-    "fhevm:start": "docker run -it -p 8545:8545 --rm --name fhevm dev-image",
+    "fhevm:start": "docker run -it -p 8545:8545 --rm --name fhevm ghcr.io/zama-ai/evmos-dev-node:v0.1.7",
     "fhevm:stop": "docker stop fhevm && docker rm fhevm",
     "fhevm:restart": "fhevm:stop && fhevm:stop",
     "fhevm:faucet": "docker exec -i fhevm faucet $(npx hardhat task:getEthereumAddress)"

@@ -90,6 +90,14 @@ Compile the smart contracts and generate TypeChain bindings:
 $ pnpm typechain
 ```
 
+### List accounts
+
+From the mnemonic in .env file, list all the derived Ethereum adresses:
+
+```sh
+$ pnpm task:accounts
+```
+
 ### Start fhevm
 
 Start a local fhevm docker container that inlcudes everything needed to 
@@ -111,17 +119,24 @@ $ pnpm fhevm:restart
 ### Get some native coins
 
 In order to interact with the blockchain, one need some coins.
-This command will give coins to the address corresponding to mnemonic in .env file.
+This command will give coins to the first address derived from the mnemonic in .env file.
 
 ```sh
 $ pnpm fhevm:faucet
 ```
 
-To get the first derived address from mnemonic:
+<br />
+<details>
+  <summary>To get the first derived address from mnemonic</summary>
+<br />
 
 ```sh
-$ pnpm task:task:getEthereumAddress
+$ pnpm task:getEthereumAddress
 ```
+</details>
+<br />
+
+
 
 ### Deploy
 

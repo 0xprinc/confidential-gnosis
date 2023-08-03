@@ -66,6 +66,10 @@ You can edit the CI script in [.github/workflows/ci.yml](./.github/workflows/ci.
 
 ### Pre Requisites
 
+Install [docker](https://docs.docker.com/engine/install/]
+
+Install [pnpm](https://pnpm.io/installation)
+
 Before being able to run any command, you need to create a `.env` file and set a BIP-39 compatible mnemonic as an
 environment variable. You can follow the example in `.env.example`. If you don't already have a mnemonic, you can use
 this [website](https://iancoleman.io/bip39/) to generate one.
@@ -213,7 +217,7 @@ pnpm clean
 Deploy a new instance of the EncryptedERC20 contract via a task:
 
 ```sh
-pnpm task:deployEncryptedERC20 --network zama
+pnpm task:deployEncryptedERC20
 ```
 
 ## Tips

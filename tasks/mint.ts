@@ -16,7 +16,10 @@ task("task:mint")
 
     const encryptedERC20 = await ethers.getContractAt("EncryptedERC20", EncryptedERC20.address);
 
-    await encryptedERC20.connect(signers[taskArguments.account]).mint(instance.encrypt32(taskArguments.mint));
+    const mint = parseInt(taskArguments.mint);
+    console.log(`Will mint ${mint} with account ${taskArguments.account}`);
+
+    await encryptedERC20.connect(signers[taskArguments.account]).mint(instance.encrypt32(mint));
 
     console.log("Mint done: ", taskArguments.mint);
   });

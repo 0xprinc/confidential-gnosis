@@ -66,6 +66,10 @@ You can edit the CI script in [.github/workflows/ci.yml](./.github/workflows/ci.
 
 ### Pre Requisites
 
+Install [docker](https://docs.docker.com/engine/install/]
+
+Install [pnpm](https://pnpm.io/installation)
+
 Before being able to run any command, you need to create a `.env` file and set a BIP-39 compatible mnemonic as an
 environment variable. You can follow the example in `.env.example`. If you don't already have a mnemonic, you can use
 this [website](https://iancoleman.io/bip39/) to generate one.
@@ -73,7 +77,23 @@ this [website](https://iancoleman.io/bip39/) to generate one.
 Then, proceed with installing dependencies:
 
 ```sh
-$ pnpm install
+pnpm install
+```
+
+### Start fhevm
+
+Start a local fhevm docker container that inlcudes everything needed to deploy FHE encrypted smart contracts
+
+```sh
+# In one terminal, keep it opened
+# The node logs are printed
+pnpm fhevm:start
+```
+
+To stop ^C or:
+
+```sh
+pnpm fhevm:stop
 ```
 
 ### Compile
@@ -81,7 +101,7 @@ $ pnpm install
 Compile the smart contracts with Hardhat:
 
 ```sh
-$ pnpm compile
+pnpm compile
 ```
 
 ### TypeChain
@@ -89,7 +109,55 @@ $ pnpm compile
 Compile the smart contracts and generate TypeChain bindings:
 
 ```sh
-$ pnpm typechain
+pnpm typechain
+```
+
+### List accounts
+
+From the mnemonic in .env file, list all the derived Ethereum adresses:
+
+```sh
+pnpm task:accounts
+```
+
+### Get some native coins
+
+In order to interact with the blockchain, one need some coins. This command will give coins to the first address derived
+from the mnemonic in .env file.
+
+```sh
+pnpm fhevm:faucet
+```
+
+<br />
+<details>
+  <summary>To get the first derived address from mnemonic</summary>
+<br />
+
+```sh
+pnpm task:getEthereumAddress
+```
+
+</details>
+<br />
+
+### Deploy
+
+Deploy the ERC20 to local network:
+
+```sh
+pnpm deploy:contracts
+```
+
+Note: by default, the local network is used. One can change the network, check
+[hardhat config file](./hardhat.config.ts).
+
+#### Mint
+
+Run the `mint` task on the local network:
+
+```sh
+pnpm task:mint --network local --mint 1000 --account 0
 ```
 
 ### Test
@@ -97,7 +165,7 @@ $ pnpm typechain
 Run the tests with Hardhat:
 
 ```sh
-$ pnpm test
+pnpm test
 ```
 
 ### Lint Solidity
@@ -105,7 +173,7 @@ $ pnpm test
 Lint the Solidity code:
 
 ```sh
-$ pnpm lint:sol
+pnpm lint:sol
 ```
 
 ### Lint TypeScript
@@ -113,7 +181,7 @@ $ pnpm lint:sol
 Lint the TypeScript code:
 
 ```sh
-$ pnpm lint:ts
+pnpm lint:ts
 ```
 
 ### Coverage
@@ -121,7 +189,7 @@ $ pnpm lint:ts
 Generate the code coverage report:
 
 ```sh
-$ pnpm coverage
+pnpm coverage
 ```
 
 ### Report Gas
@@ -129,7 +197,7 @@ $ pnpm coverage
 See the gas usage per unit test and average gas per method call:
 
 ```sh
-$ REPORT_GAS=true pnpm test
+REPORT_GAS=true pnpm test
 ```
 
 ### Clean
@@ -137,33 +205,19 @@ $ REPORT_GAS=true pnpm test
 Delete the smart contract artifacts, the coverage reports and the Hardhat cache:
 
 ```sh
-$ pnpm clean
-```
-
-### Deploy
-
-Deploy the contracts to Hardhat Network:
-
-```sh
-$ pnpm deploy:contracts"
+pnpm clean
 ```
 
 ### Tasks
 
 #### Deploy EncryptedERC20
 
+[TODO]: this command does not work on my side, please check it!
+
 Deploy a new instance of the EncryptedERC20 contract via a task:
 
 ```sh
-$ pnpm task:deployEncryptedERC20 --network zama
-```
-
-#### Mint
-
-Run the `mint` task on the Zama network:
-
-```sh
-$ pnpm task:mint --network zama --mint 1000 --account 3
+pnpm task:deployEncryptedERC20
 ```
 
 ## Tips

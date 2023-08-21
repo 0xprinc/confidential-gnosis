@@ -8,7 +8,7 @@
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-chai-matchers": "^2.0.0",
-    "@nomicfoundation/hardhat-ethers": "^3.0.0",
+    "@nomicfoundation/hardhat-ethers": "^3.0.4",
     "@nomicfoundation/hardhat-network-helpers": "^1.0.6",
     "@nomicfoundation/hardhat-toolbox": "^3.0.0",
     "@nomicfoundation/hardhat-verify": "^1.0.0",
@@ -74,10 +74,16 @@
     "postinstall": "DOTENV_CONFIG_PATH=./.env.example pnpm typechain",
     "prettier:check": "prettier --check \"**/*.{js,json,md,sol,ts,yml}\"",
     "prettier:write": "prettier --write \"**/*.{js,json,md,sol,ts,yml}\"",
-    "task:deployERC20": "hardhat task:deployERC20",
+    "task:deployEncryptedERC20": "hardhat task:deployEncryptedERC20",
     "task:mint": "hardhat task:mint",
+    "task:accounts": "hardhat task:accounts",
+    "task:getEthereumAddress": "hardhat task:getEthereumAddress",
     "test": "hardhat test",
-    "typechain": "cross-env TS_NODE_TRANSPILE_ONLY=true hardhat typechain"
+    "typechain": "cross-env TS_NODE_TRANSPILE_ONLY=true hardhat typechain",
+    "fhevm:start": "docker run -i -p 8545:8545 --rm --name fhevm ghcr.io/zama-ai/evmos-dev-node:v0.1.7",
+    "fhevm:stop": "docker rm -f fhevm",
+    "fhevm:restart": "fhevm:stop && fhevm:start",
+    "fhevm:faucet": "docker exec -i fhevm faucet $(npx hardhat task:getEthereumAddress)"
   },
   "dependencies": {
     "@openzeppelin/contracts": "^4.9.2"

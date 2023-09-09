@@ -25,8 +25,8 @@ if (!infuraApiKey) {
 }
 
 const chainIds = {
-  local: 9000,
-  zama: 8009,
+  local: 9001,
+  inco: 9000,
   "arbitrum-mainnet": 42161,
   avalanche: 43114,
   bsc: 56,
@@ -45,8 +45,8 @@ function getChainConfig(chain: keyof typeof chainIds): NetworkUserConfig {
     case "local":
       jsonRpcUrl = "http://localhost:8545/";
       break;
-    case "zama":
-      jsonRpcUrl = "https://devnet.zama.ai/";
+    case "inco":
+      jsonRpcUrl = "https://evm-rpc.inco.network/";
       break;
     case "avalanche":
       jsonRpcUrl = "https://api.avax.network/ext/bc/C/rpc";
@@ -113,7 +113,7 @@ const config: HardhatUserConfig = {
     "polygon-mainnet": getChainConfig("polygon-mainnet"),
     "polygon-mumbai": getChainConfig("polygon-mumbai"),
     sepolia: getChainConfig("sepolia"),
-    zama: getChainConfig("zama"),
+    inco: getChainConfig("inco"),
     local: getChainConfig("local"),
   },
   paths: {

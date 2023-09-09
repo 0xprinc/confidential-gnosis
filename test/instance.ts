@@ -9,7 +9,7 @@ export const getInstance = async (contractAddress: string, ethers: typeof hether
   // 1. Get chain id
   const provider = ethers.provider;
   const network = await provider.getNetwork();
-  const chainId = +network.chainId.toString(); // Need to be a number
+  const chainId = +network.chainId.toString();
 
   // Get blockchain public key
   const publicKey = await provider.call({ to: "0x0000000000000000000000000000000000000044" });

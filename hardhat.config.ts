@@ -25,8 +25,8 @@ if (!infuraApiKey) {
 }
 
 const chainIds = {
-  local: 9001,
-  inco: 9000,
+  local: 9091,
+  inco: 9090,
   "arbitrum-mainnet": 42161,
   avalanche: 43114,
   bsc: 56,

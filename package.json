@@ -80,7 +80,7 @@
     "task:getEthereumAddress": "hardhat task:getEthereumAddress",
     "test": "hardhat test",
     "typechain": "cross-env TS_NODE_TRANSPILE_ONLY=true hardhat typechain",
-    "fhevm:start": "docker run -i -p 8545:8545 --rm --name fhevm docker.io/inconetwork/inco-chain:0.1.9-hardhat-template",
+    "fhevm:start": "docker run -i -p 8545:8545 --rm --name fhevm docker.io/inconetwork/inco-chain:0.1.9.1-hardhat-template",
     "fhevm:stop": "docker rm -f fhevm",
     "fhevm:restart": "fhevm:stop && fhevm:start",
     "fhevm:faucet": "docker exec -i fhevm go run /go/src/github.com/evmos/evmos/faucet.go $(npx hardhat task:getEthereumAddress)"

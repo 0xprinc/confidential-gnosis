@@ -1,35 +1,51 @@
-import { FhevmInstance, createInstance } from "fhevmjs";
-import { ethers as hethers } from "hardhat";
+import { Signer } from "ethers";
+import fhevmjs, { FhevmInstance } from "fhevmjs";
 
-let instance: FhevmInstance;
+// import { ethers as hethers } from "hardhat";
+import type { Signers } from "./signers";
+import { FhevmInstances } from "./types";
 
-export const getInstance = async (contractAddress: string, ethers: typeof hethers) => {
-  if (instance) return instance;
+let publicKey: string;
+let chainId: number;
 
-  // 1. Get chain id
-  const provider = ethers.provider;
-  const network = await provider.getNetwork();
-  const chainId = +network.chainId.toString();
+export const createInstances = async (
+  contractAddress: string,
+  ethers: any,
+  accounts: Signers,
+): Promise<FhevmInstances> => {
+  if (!publicKey || !chainId) {
+    // 1. Get chain id
+    const provider = ethers.provider;
 
-  // Get blockchain public key
-  const publicKey = await provider.call({ to: "0x0000000000000000000000000000000000000044" });
+    const network = await provider.getNetwork();
+    chainId = +network.chainId.toString(); // Need to be a number
+
+    // Get blockchain public key
+    publicKey = await provider.call({
+      to: "0x0000000000000000000000000000000000000044",
+    });
+  }
 
   // Create instance
-  instance = await createInstance({ chainId, publicKey });
+  const instances: FhevmInstances = {} as FhevmInstances;
+  await Promise.all(
+    Object.keys(accounts).map(async (k) => {
+      const instance = await fhevmjs.createInstance({ chainId, publicKey });
+      await generateToken(contractAddress, accounts[k as keyof Signers], instance);
+      instances[k as keyof FhevmInstances] = instance;
+    }),
+  );
 
-  await generateToken(contractAddress, ethers);
-
-  return instance;
+  return instances;
 };
 
-const generateToken = async (contractAddress: string, ethers: typeof hethers) => {
+const generateToken = async (contractAddress: string, signer: Signer, instance: FhevmInstance) => {
   // Generate token to decrypt
   const generatedToken = instance.generateToken({
     verifyingContract: contractAddress,
   });
 
   // Sign the public key
-  const [signer] = await ethers.getSigners();
   const signature = await signer.signTypedData(
     generatedToken.token.domain,
     { Reencrypt: generatedToken.token.types.Reencrypt }, // Need to remove EIP712Domain from types

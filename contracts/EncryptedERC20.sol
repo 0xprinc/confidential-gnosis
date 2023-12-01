@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause-Clear
 
-pragma solidity >=0.8.13 <0.8.20;
+pragma solidity 0.8.19;
 
 import "fhevm/abstracts/EIP712WithModifier.sol";
 
@@ -31,8 +31,8 @@ contract EncryptedERC20 is EIP712WithModifier {
     // Sets the balance of the owner to the given encrypted balance.
     function mint(bytes calldata encryptedAmount) public onlyContractOwner {
         euint32 amount = TFHE.asEuint32(encryptedAmount);
-        balances[contractOwner] = TFHE.add(balances[contractOwner], amount);
-        totalSupply = TFHE.add(totalSupply, amount);
+        balances[contractOwner] = balances[contractOwner] + amount;
+        totalSupply = totalSupply + amount;
     }
 
     // Transfers an encrypted amount from the message sender address to the `to` address.
@@ -114,8 +114,8 @@ contract EncryptedERC20 is EIP712WithModifier {
         TFHE.optReq(TFHE.le(amount, balances[from]));
 
         // Add to the balance of `to` and subract from the balance of `from`.
-        balances[to] = TFHE.add(balances[to], amount);
-        balances[from] = TFHE.sub(balances[from], amount);
+        balances[to] = balances[to] + amount;
+        balances[from] = balances[from] - amount;
     }
 
     modifier onlyContractOwner() {

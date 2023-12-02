@@ -71,10 +71,10 @@ devDependencies:
     specifier: ^6.8.0
     version: 6.8.0
   fhevm:
-    specifier: ^0.2.0
+    specifier: ^0.2.2
     version: 0.2.2
   fhevmjs:
-    specifier: ^0.2.1
+    specifier: ^0.2.2
     version: 0.2.2
   fs-extra:
     specifier: ^10.1.0

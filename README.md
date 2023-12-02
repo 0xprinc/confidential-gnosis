@@ -240,7 +240,7 @@ pnpm task:deployERC20
 
 ### Increase gas limit
 
-If you are running several fhe operations and need to have more has per block, here is a way to customize your local
+If you are running several fhe operations and need to have more gas per block, here is a way to customize your local
 node setup.
 
 1. Copy docker setup.sh file
@@ -258,7 +258,7 @@ cat $HOME_EVMOSD/config/genesis.json | jq '.consensus_params["block"]["max_gas"]
 3. Run the dev image with the custom setup.sh file
 
 ```bash
-docker run -i -v $PWD/setup.sh:/config/setup.sh -p 8545:8545 --rm --name fhevm ghcr.io/zama-ai/evmos-dev-node:v0.1.10
+docker run -i -v $PWD/setup.sh:/config/setup.sh -p 8545:8545 --rm --name fhevm docker.io/inconetwork/inco-chain:0.1.9.1-hardhat-template
 ```
 
 Note: one can also replace fhevm:start in package.json with the above command

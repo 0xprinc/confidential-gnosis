@@ -20,7 +20,7 @@ if (!mnemonic) {
 }
 
 const chainIds = {
-  local: 9000,
+  local: 9091,
   inco: 9090,
   "arbitrum-mainnet": 42161,
   avalanche: 43114,

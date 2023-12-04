@@ -6,7 +6,7 @@ import type { NetworkUserConfig } from "hardhat/types";
 import { resolve } from "path";
 
 import "./tasks/accounts";
-import "./tasks/deployEncryptedERC20";
+import "./tasks/deployERC20";
 import "./tasks/getEthereumAddress";
 import "./tasks/mint";
 
@@ -17,11 +17,6 @@ dotenvConfig({ path: resolve(__dirname, dotenvConfigPath) });
 const mnemonic: string | undefined = process.env.MNEMONIC;
 if (!mnemonic) {
   throw new Error("Please set your MNEMONIC in a .env file");
-}
-
-const infuraApiKey: string | undefined = process.env.INFURA_API_KEY;
-if (!infuraApiKey) {
-  throw new Error("Please set your INFURA_API_KEY in a .env file");
 }
 
 const chainIds = {
@@ -37,13 +32,14 @@ const chainIds = {
   "polygon-mainnet": 137,
   "polygon-mumbai": 80001,
   sepolia: 11155111,
+  zama: 8009,
 };
 
 function getChainConfig(chain: keyof typeof chainIds): NetworkUserConfig {
   let jsonRpcUrl: string;
   switch (chain) {
     case "local":
-      jsonRpcUrl = "http://localhost:8545/";
+      jsonRpcUrl = "http://localhost:8545";
       break;
     case "inco":
       jsonRpcUrl = "https://evm-rpc.inco.network/";
@@ -54,8 +50,9 @@ function getChainConfig(chain: keyof typeof chainIds): NetworkUserConfig {
     case "bsc":
       jsonRpcUrl = "https://bsc-dataseed1.binance.org";
       break;
-    default:
-      jsonRpcUrl = "https://" + chain + ".infura.io/v3/" + infuraApiKey;
+    case "zama":
+      jsonRpcUrl = "https://devnet.zama.ai";
+      break;
   }
   return {
     accounts: {
@@ -73,17 +70,8 @@ const config: HardhatUserConfig = {
   namedAccounts: {
     deployer: 0,
   },
-  etherscan: {
-    apiKey: {
-      arbitrumOne: process.env.ARBISCAN_API_KEY || "",
-      avalanche: process.env.SNOWTRACE_API_KEY || "",
-      bsc: process.env.BSCSCAN_API_KEY || "",
-      mainnet: process.env.ETHERSCAN_API_KEY || "",
-      optimisticEthereum: process.env.OPTIMISM_API_KEY || "",
-      polygon: process.env.POLYGONSCAN_API_KEY || "",
-      polygonMumbai: process.env.POLYGONSCAN_API_KEY || "",
-      sepolia: process.env.ETHERSCAN_API_KEY || "",
-    },
+  mocha: {
+    timeout: 180000,
   },
   gasReporter: {
     currency: "USD",
@@ -105,15 +93,10 @@ const config: HardhatUserConfig = {
       chainId: chainIds.ganache,
       url: "http://localhost:8545",
     },
-    arbitrum: getChainConfig("arbitrum-mainnet"),
     avalanche: getChainConfig("avalanche"),
     bsc: getChainConfig("bsc"),
-    mainnet: getChainConfig("mainnet"),
-    optimism: getChainConfig("optimism-mainnet"),
-    "polygon-mainnet": getChainConfig("polygon-mainnet"),
-    "polygon-mumbai": getChainConfig("polygon-mumbai"),
-    sepolia: getChainConfig("sepolia"),
     inco: getChainConfig("inco"),
+    zama: getChainConfig("zama"),
     local: getChainConfig("local"),
   },
   paths: {

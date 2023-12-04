@@ -66,7 +66,7 @@ You can edit the CI script in [.github/workflows/ci.yml](./.github/workflows/ci.
 
 ### Pre Requisites
 
-Install [docker](https://docs.docker.com/engine/install/]
+Install [docker](https://docs.docker.com/engine/install/)
 
 Install [pnpm](https://pnpm.io/installation)
 
@@ -90,7 +90,7 @@ Start a local fhevm docker container that inlcudes everything needed to deploy F
 pnpm fhevm:start
 ```
 
-To stop ^C or:
+To stop:
 
 ```sh
 pnpm fhevm:stop
@@ -149,15 +149,33 @@ Deploy the ERC20 to local network:
 pnpm deploy:contracts
 ```
 
-Note: by default, the local network is used. One can change the network, check
-[hardhat config file](./hardhat.config.ts).
+Notes: <br />
+
+<details>
+<summary>Error: cannot get the transaction for EncryptedERC20's previous deployment</summary>
+
+One can delete the local folder in deployments:
+
+```bash
+rm -r deployments/local/
+```
+
+</details>
+
+<details>
+<summary>Info: by default, the local network is used</summary>
+
+One can change the network, check [hardhat config file](./hardhat.config.ts).
+
+</details>
+<br />
 
 #### Mint
 
 Run the `mint` task on the local network:
 
 ```sh
-pnpm task:mint --network local --mint 1000 --account 0
+pnpm task:mint --network local --mint 1000 --account alice
 ```
 
 ### Test
@@ -212,15 +230,38 @@ pnpm clean
 
 #### Deploy EncryptedERC20
 
-[TODO]: this command does not work on my side, please check it!
-
 Deploy a new instance of the EncryptedERC20 contract via a task:
 
 ```sh
-pnpm task:deployEncryptedERC20
+pnpm task:deployERC20
 ```
 
 ## Tips
+
+### Increase gas limit
+
+If you are running several fhe operations and need to have more gas per block, here is a way to customize your local
+node setup.
+
+1. Copy docker setup.sh file
+
+```bash
+docker cp fhevm:/config/setup.sh .
+```
+
+2. Increase the gas limit from 10M to 100M for example in setup.sh
+
+```bash
+cat $HOME_EVMOSD/config/genesis.json | jq '.consensus_params["block"]["max_gas"]="10000000"' > $HOME_EVMOSD/config/tmp_genesis.json && mv $HOME_EVMOSD/config/tmp_genesis.json $HOME_EVMOSD/config/genesis.json
+```
+
+3. Run the dev image with the custom setup.sh file
+
+```bash
+docker run -i -v $PWD/setup.sh:/config/setup.sh -p 8545:8545 --rm --name fhevm docker.io/inconetwork/inco-chain:0.1.9.1-hardhat-template
+```
+
+Note: one can also replace fhevm:start in package.json with the above command
 
 ### Syntax Highlighting
 
@@ -236,7 +277,7 @@ on/off.
 
 ## Local development with Docker
 
-Not ready yet...
+Please check Evmos repository to be able to build FhEVM from sources.
 
 ## License
 

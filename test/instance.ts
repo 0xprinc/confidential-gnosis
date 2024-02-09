@@ -1,7 +1,8 @@
 import { Signer } from "ethers";
 import fhevmjs, { FhevmInstance } from "fhevmjs";
+import { ethers as hethers } from "hardhat";
 
-// import { ethers as hethers } from "hardhat";
+import { FHE_LIB_ADDRESS } from "./generated";
 import type { Signers } from "./signers";
 import { FhevmInstances } from "./types";
 
@@ -10,7 +11,7 @@ let chainId: number;
 
 export const createInstances = async (
   contractAddress: string,
-  ethers: any,
+  ethers: typeof hethers,
   accounts: Signers,
 ): Promise<FhevmInstances> => {
   if (!publicKey || !chainId) {
@@ -21,9 +22,13 @@ export const createInstances = async (
     chainId = +network.chainId.toString(); // Need to be a number
 
     // Get blockchain public key
-    publicKey = await provider.call({
-      to: "0x0000000000000000000000000000000000000044",
+    const ret = await provider.call({
+      to: FHE_LIB_ADDRESS,
+      // first four bytes of keccak256('fhePubKey(bytes1)') + 1 byte for library
+      data: "0xd9d47bb001",
     });
+    const decoded = ethers.AbiCoder.defaultAbiCoder().decode(["bytes"], ret);
+    publicKey = decoded[0];
   }
 
   // Create instance
@@ -41,15 +46,15 @@ export const createInstances = async (
 
 const generateToken = async (contractAddress: string, signer: Signer, instance: FhevmInstance) => {
   // Generate token to decrypt
-  const generatedToken = instance.generateToken({
+  const generatedToken = instance.generatePublicKey({
     verifyingContract: contractAddress,
   });
 
   // Sign the public key
   const signature = await signer.signTypedData(
-    generatedToken.token.domain,
-    { Reencrypt: generatedToken.token.types.Reencrypt }, // Need to remove EIP712Domain from types
-    generatedToken.token.message,
+    generatedToken.eip712.domain,
+    { Reencrypt: generatedToken.eip712.types.Reencrypt }, // Need to remove EIP712Domain from types
+    generatedToken.eip712.message,
   );
-  instance.setTokenSignature(contractAddress, signature);
+  instance.setSignature(contractAddress, signature);
 };

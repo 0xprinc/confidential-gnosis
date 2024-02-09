@@ -20,7 +20,7 @@ if (!mnemonic) {
 }
 
 const chainIds = {
-  local: 9091,
+  local: 9090,
   inco: 9090,
   "arbitrum-mainnet": 42161,
   avalanche: 43114,
@@ -106,7 +106,7 @@ const config: HardhatUserConfig = {
     tests: "./test",
   },
   solidity: {
-    version: "0.8.19",
+    version: "0.8.22",
     settings: {
       metadata: {
         // Not including the metadata hash

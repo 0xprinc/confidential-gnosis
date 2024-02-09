@@ -94,6 +94,6 @@
     "@openzeppelin/contracts": "^4.9.2"
   },
   "resolutions": {
-      "node-tfhe": "0.5.1"
+    "node-tfhe": "0.5.1"
   }
 }

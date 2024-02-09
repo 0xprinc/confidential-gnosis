@@ -4,6 +4,9 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  node-tfhe: 0.5.1
+
 dependencies:
   '@openzeppelin/contracts':
     specifier: ^4.9.2
@@ -71,11 +74,11 @@ devDependencies:
     specifier: ^6.8.0
     version: 6.8.0
   fhevm:
-    specifier: ^0.2.2
-    version: 0.2.2
+    specifier: ^0.3.0
+    version: 0.3.0(hardhat@2.18.1)
   fhevmjs:
-    specifier: ^0.2.2
-    version: 0.2.2
+    specifier: ^0.3.2
+    version: 0.3.2
   fs-extra:
     specifier: ^10.1.0
     version: 10.1.0
@@ -94,6 +97,9 @@ devDependencies:
   mocha:
     specifier: ^10.1.0
     version: 10.1.0
+  node-tfhe:
+    specifier: 0.5.1
+    version: 0.5.1
   prettier:
     specifier: ^2.8.4
     version: 2.8.4
@@ -1248,6 +1254,11 @@ packages:
 
   /@openzeppelin/contracts@4.9.2:
     resolution: {integrity: sha512-mO+y6JaqXjWeMh9glYVzVu8HYPGknAAnWyxTRhGeckOruyXQMNnlcW6w/Dx9ftLeIQk6N+ZJFuVmTwF7lEIFrg==}
+    dev: false
+
+  /@openzeppelin/contracts@5.0.1:
+    resolution: {integrity: sha512-yQJaT5HDp9hYOOp4jTYxMsR02gdFZFXhewX5HW9Jo4fsqSVqqyIO/xTHdWDaKX5a3pv1txmf076Lziz+sO7L1w==}
+    dev: true
 
   /@scure/base@1.1.1:
     resolution: {integrity: sha512-ZxOhsSyxYwLJj3pLZCefNitxsj093tb2vq90mp2txoYeBqbcjDjqFhyM8eUjq/uFm6zJ+mUuqxlS2FkuSY1MTA==}
@@ -3140,14 +3151,17 @@ packages:
       reusify: 1.0.4
     dev: true
 
-  /fhevm@0.2.2:
-    resolution: {integrity: sha512-6KUHVimpMrYGarOzfBwFBAUDCMmsfFYIoFWL/rYLUXz6XIJDHEzbCDLPF5HToP4IOppv5tfH6w0314ThfPer5A==}
+  /fhevm@0.3.0(hardhat@2.18.1):
+    resolution: {integrity: sha512-+xLuWQ0B0GeO/cPsmEvfW9yUEMIPlYoZ8v26sCjtWHyWzr4WBNHhxbMYxvZiW/hLTJTKCc91hBxGpdQjH4zBWw==}
     dependencies:
-      '@openzeppelin/contracts': 4.9.2
+      '@openzeppelin/contracts': 5.0.1
+      hardhat-preprocessor: 0.1.5(hardhat@2.18.1)
+    transitivePeerDependencies:
+      - hardhat
     dev: true
 
-  /fhevmjs@0.2.2:
-    resolution: {integrity: sha512-FTeJgVNA2cF233WS3gwtOg5aglzwv4SWbM6+ckpVcHjQQoR+i7iOa15uH8C6BgkERciuLC5U8rc//0aBk1ALDg==}
+  /fhevmjs@0.3.2:
+    resolution: {integrity: sha512-/6D8uqlU3UYQRxyQJWxr6F6qjwe5pLvqeIZlp3YRilLytiFEoBQT5bwSbXzQ7UtY7VuTr82BfIUpNlSBItD5ww==}
     hasBin: true
     dependencies:
       commander: 11.0.0
@@ -3155,9 +3169,9 @@ packages:
       ethers: 6.8.0
       libsodium: 0.7.11
       libsodium-wrappers: 0.7.11
-      node-tfhe: 0.3.1
+      node-tfhe: 0.5.1
       sha3: 2.1.4
-      tfhe: 0.3.1
+      tfhe: 0.4.2
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -3663,6 +3677,15 @@ packages:
       sha1: 1.1.1
     transitivePeerDependencies:
       - '@codechecks/client'
+    dev: true
+
+  /hardhat-preprocessor@0.1.5(hardhat@2.18.1):
+    resolution: {integrity: sha512-j8m44mmPxpxAAd0G8fPHRHOas/INZdzptSur0TNJvMEGcFdLDhbHHxBcqZVQ/bmiW42q4gC60AP4CXn9EF018g==}
+    peerDependencies:
+      hardhat: ^2.0.5
+    dependencies:
+      hardhat: 2.18.1(ts-node@10.9.1)(typescript@5.1.6)
+      murmur-128: 0.2.1
     dev: true
 
   /hardhat@2.18.1(ts-node@10.9.1)(typescript@5.1.6):
@@ -4673,8 +4696,8 @@ packages:
     resolution: {integrity: sha512-+M0PwXeU80kRohZ3aT4J/OnR+l9/KD2nVLNNoRgFtnf+umQVFdGBAO2N8+nCnEi0xlh/Wk3zOGC+vNNx+uM79Q==}
     dev: true
 
-  /node-tfhe@0.3.1:
-    resolution: {integrity: sha512-re5tBgPMwoSWl6b/pL13MWKnsBUv9nldAXoWkokG1aiUm9P0aOjJoz0J9+zOwV/dB0i9xN/TI//mnqF3uWAOIg==}
+  /node-tfhe@0.5.1:
+    resolution: {integrity: sha512-jSPB9gsEoPL21Q5gNWTxxedJ0YxKDfnb7W3uIcKjEGvsw0QMMV4uD/NsACNltDplQ2cmIsK/z+4jC5LJxfw5kQ==}
     dev: true
 
   /nofilter@3.1.0:
@@ -5787,8 +5810,8 @@ packages:
     resolution: {integrity: sha512-N+8UisAXDGk8PFXP4HAzVR9nbfmVJ3zYLAWiTIoqC5v5isinhr+r5uaO8+7r3BMfuNIufIsA7RdpVgacC2cSpw==}
     dev: true
 
-  /tfhe@0.3.1:
-    resolution: {integrity: sha512-PqnsUVChETviwd5ebfJoj9yueUxIKPaSsfSGVmgvpUsUqAlianAx+4UH9hEmjDxgshSRDgm1Fp0/rRgCx2BYog==}
+  /tfhe@0.4.2:
+    resolution: {integrity: sha512-mf6LqRcClIJB5D6thrnDR73Zrq82QwFsmRros9RuFLIEm1S836CjrVuXrKq6Nmsm07ekh0peznscxMfshPykwA==}
     dev: true
 
   /then-request@6.0.2:

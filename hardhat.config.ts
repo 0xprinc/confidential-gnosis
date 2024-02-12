@@ -42,7 +42,7 @@ function getChainConfig(chain: keyof typeof chainIds): NetworkUserConfig {
       jsonRpcUrl = "http://localhost:8545";
       break;
     case "inco":
-      jsonRpcUrl = "https://evm-rpc.inco.network/";
+      jsonRpcUrl = "https://testnet.inco.org";
       break;
     case "avalanche":
       jsonRpcUrl = "https://api.avax.network/ext/bc/C/rpc";

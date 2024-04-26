@@ -231,6 +231,7 @@ describe("EncryptedERC20", function () {
       // Handle the error appropriately (e.g., retry, notify user)
     }
     
+    console.log("1 if executed -> " + (await contractSpace.proposals(1)).finalizationStatus);
   });
 
 });

@@ -17,7 +17,7 @@ abstract contract SimpleQuorumExecutionStrategy is IExecutionStrategy, SpaceMana
 
     /// @dev Initializer
     // solhint-disable-next-line func-name-mixedcase
-    function __SimpleQuorumExecutionStrategy_init(uint256 _quorum) internal onlyInitializing {
+    function __SimpleQuorumExecutionStrategy_init(uint256 _quorum) internal onlyInitializing {-
         quorum = _quorum;
     }
 

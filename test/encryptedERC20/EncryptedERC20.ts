@@ -5,7 +5,7 @@ import { createInstances } from "../instance";
 import { getSigners } from "../signers";
 import { createTransaction } from "../utils";
 import { deploySpace, deployVotingStrategy, deployExecutionStrategy, deployValidationStrategy, deployAuthenticator } from "./EncryptedERC20.fixture";
-import { InitializeCalldataStruct, StrategyStruct, IndexedStrategyStruct } from "../../types";
+import { InitializeCalldataStruct, StrategyStruct } from "../../types";
 import { assert } from "console";
 import fhevmjs, { FhevmInstance } from "fhevmjs";
 
@@ -22,6 +22,7 @@ describe("EncryptedERC20", function () {
 
   // });
 
+  
 
   it("initialize space", async function () {
 
@@ -37,6 +38,8 @@ describe("EncryptedERC20", function () {
     const addressValidationStrategy = await contractValidationStrategy.getAddress();
     const addressAuthenticator = await contractAuthenticator.getAddress();
     const addressSigner = await this.signers.alice.getAddress();
+
+    let fhevmInstance = await createInstances(addressSpace, ethers, this.signers);
 
 {
     console.log("\n\n\n\ninitializing Space contract \n");
@@ -65,7 +68,7 @@ describe("EncryptedERC20", function () {
       votingStrategyMetadataURIs: ["votingStrategyMetadataURIs"],
       authenticators: [addressAuthenticator]
     };
-    console.log("owner before initialize: " + await contractSpace.owner());
+    // console.log("owner before initialize: " + await contractSpace.owner());
     try {
       const txn = await contractSpace.initialize(data);
       console.log("Transaction hash:", txn.hash);
@@ -77,8 +80,8 @@ describe("EncryptedERC20", function () {
       console.error("Transaction failed:", error);
       // Handle the error appropriately (e.g., retry, notify user)
     }
-    console.log("alice address -> " + addressSigner);
-    console.log("owner after initialize: " + await contractSpace.owner());
+    // console.log("alice address -> " + addressSigner);
+    // console.log("owner after initialize: " + await contractSpace.owner());
     // assert(addressSigner == contractSpace.owner());
 
 }
@@ -98,7 +101,7 @@ describe("EncryptedERC20", function () {
     
     // console.log(AbiCoder.defaultAbiCoder().encode(["address", "string", "tuple(address, bytes)", "bytes"], data2propose));
 
-    console.log("old proposal -> " + await contractSpace.proposals(1));
+    // console.log("old proposal -> " + await contractSpace.proposals(1));
     try {
       const txn = await contractAuthenticator.authenticate(addressSpace, '0xaad83f3b', AbiCoder.defaultAbiCoder().encode(["address", "string", "tuple(address, bytes)", "bytes"], data2propose));
       console.log("Transaction hash:", txn.hash);
@@ -115,9 +118,8 @@ describe("EncryptedERC20", function () {
 
 }
 
+{
     console.log("\n\n\n\n\n voting \n");
-
-    let fhevmInstance = await createInstances(addressSpace, ethers, this.signers);
 
     let data2voteAbstain = [
       addressSigner,
@@ -148,7 +150,7 @@ describe("EncryptedERC20", function () {
       ""
     ];
     // console.log("votePower before vote -> " + (await contractSpace.votePower(1, 2)).toString());
-
+    console.log("current block number -> " + await ethers.provider.getBlockNumber());
     try {
       const txn = await contractAuthenticator.authenticate(addressSpace, '0x954ee6da', AbiCoder.defaultAbiCoder().encode(["address", "uint256", "bytes", "tuple(uint8, bytes)[]", "string"], data2voteAgainst));
       console.log("Transaction hash:", txn.hash);
@@ -193,11 +195,42 @@ describe("EncryptedERC20", function () {
       console.error("Transaction failed:", error);
       // Handle the error appropriately (e.g., retry, notify user)
     }
+    console.log("current block number -> " + await ethers.provider.getBlockNumber());
 
-    console.log("For votes -> " +     fhevmInstance.alice.decrypt(addressSpace,(await contractSpace.votePower(1, 1)).toString()));
-    console.log("Abstain votes -> " + fhevmInstance.alice.decrypt(addressSpace,(await contractSpace.votePower(1, 2)).toString()));
-    console.log("Against votes -> " + fhevmInstance.alice.decrypt(addressSpace,(await contractSpace.votePower(1, 0)).toString()));
 
+    const token = fhevmInstance.alice.getTokenSignature(addressSpace) || {
+      signature: "",
+      publicKey: "",
+    };
+
+    let For_votes = (await contractSpace.getVotePower(1, 1, token.publicKey)).toString();
+    let Abstain_votes = (await contractSpace.getVotePower(1, 2, token.publicKey)).toString();
+    let Against_votes = (await contractSpace.getVotePower(1, 0, token.publicKey)).toString();
+    console.log(For_votes);
+    console.log(Abstain_votes);
+    console.log(Against_votes);
+    
+    console.log("For votes -> " +     fhevmInstance.alice.decrypt(addressSpace, For_votes));
+    console.log("Abstain votes -> " + fhevmInstance.alice.decrypt(addressSpace, Abstain_votes));
+    console.log("Against votes -> " + fhevmInstance.alice.decrypt(addressSpace, Against_votes));
+}
+
+
+    console.log("current block number -> " + await ethers.provider.getBlockNumber());
+    console.log("\n\n\n\n execution \n");
+    let executionPayload = "0x";
+    try {
+      const txn = await contractSpace.execute(1, executionPayload);
+      console.log("Transaction hash:", txn.hash);
+
+      // Wait for 1 confirmation (adjust confirmations as needed)
+      await txn.wait(1);
+      console.log("execution successful!");
+    } catch (error) {
+      console.error("Transaction failed:", error);
+      // Handle the error appropriately (e.g., retry, notify user)
+    }
+    
   });
 
 });

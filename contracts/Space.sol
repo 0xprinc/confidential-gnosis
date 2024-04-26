@@ -98,6 +98,9 @@ contract Space is ISpace, Initializable, IERC4824, UUPSUpgradeable, OwnableUpgra
         emit SpaceCreated(address(this), input);
     }
 
+    function getVotePower(uint256 proposalId, uint8 choice, bytes32 publicKey) public view returns (bytes memory) {
+        return TFHE.reencrypt(votePower[proposalId][choice], publicKey, 0);
+    }
     // ------------------------------------
     // |                                  |
     // |             SETTERS              |

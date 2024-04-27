@@ -49,7 +49,7 @@ interface ISpaceState {
     /// @param proposalId The ID of the proposal.
     /// @param choice The choice of the voter.
     // function votePower(uint256 proposalId, Choice choice) external view returns (uint256);       //@Choice   @votePower
-    function votePower(uint256 proposalId, uint8 choice) external view returns (euint32);
+    // function votePower(uint256 proposalId, uint8 choice) external view returns (euint32);
 
     /// @notice Returns whether a voter has voted on a proposal.
     /// @param proposalId The ID of the proposal.

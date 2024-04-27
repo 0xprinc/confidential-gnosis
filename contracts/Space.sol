@@ -72,7 +72,6 @@ contract Space is ISpace, Initializable, IERC4824, UUPSUpgradeable, OwnableUpgra
     /// @inheritdoc ISpaceState
     mapping(uint256 proposalId => Proposal proposal) public override proposals;
     // @inheritdoc ISpaceState
-    // mapping(uint256 proposalId => mapping(Choice choice => uint256 votePower)) public override votePower;    //@Choice @votePower
     mapping(uint256 proposalId => mapping(uint8 choice => euint32 votePower)) public override votePower;       // choice made public
     /// @inheritdoc ISpaceState
     mapping(uint256 proposalId => mapping(address voter => uint256 hasVoted)) public override voteRegistry;
@@ -274,7 +273,19 @@ contract Space is ISpace, Initializable, IERC4824, UUPSUpgradeable, OwnableUpgra
             proposal.activeVotingStrategies
         ));
         if (votingPower == 0) revert UserHasNoVotingPower();
+
+        //method 1
         votePower[proposalId][TFHE.decrypt(TFHE.asEuint8(choice))] = TFHE.add(votePower[proposalId][TFHE.decrypt(TFHE.asEuint8(choice))], votingPower);  // tbc 
+
+
+        // method 2
+        // ebool isAgainst = TFHE.eq(TFHE.asEuint8(choice), TFHE.asEuint8(0));
+        // ebool isFor = TFHE.eq(TFHE.asEuint8(choice), TFHE.asEuint8(1));
+        // ebool isAbstain = TFHE.eq(TFHE.asEuint8(choice), TFHE.asEuint8(2));
+
+        // votePower[proposalId][0] = TFHE.add(votePower[proposalId][0], TFHE.cmux(isAgainst, TFHE.asEuint32(votingPower), TFHE.asEuint32(0)));
+        // votePower[proposalId][1] = TFHE.add(votePower[proposalId][1], TFHE.cmux(isFor, TFHE.asEuint32(votingPower), TFHE.asEuint32(0)));
+        // votePower[proposalId][2] = TFHE.add(votePower[proposalId][2], TFHE.cmux(isAbstain, TFHE.asEuint32(votingPower), TFHE.asEuint32(0)));
 
         if (bytes(metadataURI).length == 0) {
             emit VoteCast(proposalId, voter, TFHE.asEuint8(choice), votingPower);  //@votePower

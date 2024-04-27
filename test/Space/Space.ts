@@ -4,7 +4,7 @@ import { ethers } from "hardhat";
 import { createInstances } from "../instance";
 import { getSigners } from "../signers";
 import { createTransaction } from "../utils";
-import { deploySpace, deployVotingStrategy, deployExecutionStrategy, deployValidationStrategy, deployAuthenticator } from "./EncryptedERC20.fixture";
+import { deploySpace, deployVotingStrategy, deployExecutionStrategy, deployValidationStrategy, deployAuthenticator } from "./Space.fixture";
 import { InitializeCalldataStruct, StrategyStruct } from "../../types";
 import { assert } from "console";
 import fhevmjs, { FhevmInstance } from "fhevmjs";
@@ -13,7 +13,7 @@ import { AbiCoder } from "ethers";
 
 // Remove the duplicate import statement for 'ethers'
 
-describe("EncryptedERC20", function () {
+describe("Space", function () {
   before(async function () {
     this.signers = await getSigners(ethers);
   });

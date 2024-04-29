@@ -7,8 +7,6 @@ import {
     Proposal, ProposalStatus, FinalizationStatus, Strategy } from "contracts/types.sol";
 import { IExecutionStrategy } from "contracts/interfaces/IExecutionStrategy.sol";
 
-import "fhevm/lib/TFHE.sol";
-
 /// @title Space State
 interface ISpaceState {
     /// @notice The maximum duration of the voting period.

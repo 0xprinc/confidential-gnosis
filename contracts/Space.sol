@@ -288,9 +288,9 @@ contract Space is ISpace, Initializable, IERC4824, UUPSUpgradeable, OwnableUpgra
         // votePower[proposalId][2] = TFHE.add(votePower[proposalId][2], TFHE.cmux(isAbstain, TFHE.asEuint32(votingPower), TFHE.asEuint32(0)));
 
         if (bytes(metadataURI).length == 0) {
-            emit VoteCast(proposalId, voter, TFHE.asEuint8(choice), votingPower);  //@votePower
+            emit VoteCast(proposalId, voter, choice, votingPower);  //@votePower
         } else {
-            emit VoteCastWithMetadata(proposalId, voter, TFHE.asEuint8(choice), votingPower, metadataURI); //@votePower
+            emit VoteCastWithMetadata(proposalId, voter, choice, votingPower, metadataURI); //@votePower
         }
     }
 

@@ -7,7 +7,6 @@ import {
         // Choice,                          //@Choice
         IndexedStrategy, Strategy } from "../types.sol";
 
-import "fhevm/lib/TFHE.sol";
 
 /// @title Ethereum Transaction Authenticator
 contract EthTxAuthenticator is Authenticator {
@@ -43,7 +42,7 @@ contract EthTxAuthenticator is Authenticator {
     //     if (voter != msg.sender) revert InvalidMessageSender();
     // }
     function _verifyVote(bytes calldata data) internal view {
-        (address voter, , , ) = abi.decode(data, (address, uint256, euint8, IndexedStrategy[]));
+        (address voter) = abi.decode(data, (address));
         if (voter != msg.sender) revert InvalidMessageSender();
     }
 

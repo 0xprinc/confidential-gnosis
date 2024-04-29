@@ -10,8 +10,6 @@ import {
 import { SXHash } from "contracts/utils/SXHash.sol";
 import { TRUE, FALSE } from "../types.sol";
 
-import "fhevm/lib/TFHE.sol";
-
 /// @title EIP712 Signature Verifier
 /// @notice Verifies Signatures for Snapshot X actions.
 abstract contract SignatureVerifier is EIP712 {

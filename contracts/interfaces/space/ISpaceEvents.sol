@@ -5,7 +5,6 @@ import { IndexedStrategy, Proposal, Strategy,
     // Choice,                      //@Choice
      InitializeCalldata } from "contracts/types.sol";
 
-import "fhevm/lib/TFHE.sol";
 
 /// @title Space Events
 interface ISpaceEvents {
@@ -28,7 +27,7 @@ interface ISpaceEvents {
     /// @param choice The vote choice (`For`, `Against`, `Abstain`).
     /// @param votingPower The voting power of the voter.
     // event VoteCast(uint256 proposalId, address voter, Choice choice, uint256 votingPower);               //@Choice
-    event VoteCast(uint256 proposalId, address voter, euint8 choice, uint32 votingPower);                   //@votePower
+    event VoteCast(uint256 proposalId, address voter, bytes choice, uint32 votingPower);                   //@votePower
 
     /// @notice Emitted when a vote is cast with metadata.
     /// @param proposalId The proposal id.
@@ -46,7 +45,7 @@ interface ISpaceEvents {
     event VoteCastWithMetadata(     //@votePower
         uint256 proposalId,
         address voter,
-        euint8 choice,
+        bytes choice,
         uint32 votingPower,
         string metadataUri
     );

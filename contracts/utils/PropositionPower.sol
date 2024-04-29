@@ -6,8 +6,6 @@ import { SXUtils } from "./SXUtils.sol";
 import { IndexedStrategy, Strategy } from "../types.sol";
 import { IVotingStrategy } from "../interfaces/IVotingStrategy.sol";
 
-import "fhevm/lib/TFHE.sol";
-
 /// @title Proposition Power Proposal Validation Strategy Module
 /// @notice This module allows a proposal to be validated based on the proposition power of an author exceeding
 ///         a threshold over a set of voting strategies.
@@ -35,7 +33,7 @@ abstract contract PropositionPower {
         uint32 blockNumber,
         IndexedStrategy[] memory userStrategies,
         Strategy[] memory allowedStrategies
-    ) internal returns (uint32) {
+    ) internal view returns (uint32) {
         // Ensure there are no duplicates to avoid an attack where people double count a strategy.
         userStrategies.assertNoDuplicateIndicesMemory();
 

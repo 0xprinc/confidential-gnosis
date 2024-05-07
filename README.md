@@ -7,9 +7,15 @@ This repo demonstrates private voting on Inco.
 
 We have made modifications to the following contracts:
 
+`votePower mapping is where all the votes of (For, Abstain, Against) are aggregated`
 
-Space.sol: We have modified the vote, execute, and get proposal status function. 
-Execution Strategies. 
+`Space.sol` : 
+- We have modified the vote, execute, and get proposal status function to work with encrypted types of TFHE library.
+- choice enum is converted to encrypted bytes choice
+- votePower is converted from uint256 to euint32
+
+`Execution Strategies` :
+- changed the functions of `execute` and `getProposalStatus` to have the logic of working with encrypted votePower.
 
 To compile the code: 
 
@@ -55,7 +61,7 @@ Changes made :
 - `vote` and `execute` function are changed to call `targetEndpoint` as `votePower` mapping is present in inco
 
 
-## Cylic Transaction Branch
+## Cyclic Transaction Branch
  
  
 This repo demonstrates cross-chain private voting between Inco and Redstone. The key difference between the multi-chain and cylic transaction branch is that the execution also happens on Redstone. 

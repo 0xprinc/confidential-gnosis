@@ -5,6 +5,12 @@ There are three branches in this repo:
 ## Main Branch 
 This repo demonstrates private voting on Inco. 
 
+We have made modifications to the following contracts:
+
+
+Space.sol: We have modified the vote, execute, and get proposal status function. 
+
+
 To compile the code: 
 
 ```sh

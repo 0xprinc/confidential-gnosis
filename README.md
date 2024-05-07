@@ -7,12 +7,10 @@ This repo demonstrates private voting on Inco. The key change that we have made 
 
 We have made modifications to the following contracts:
 
-1) **votePower mapping** is where all the votes of (For, Abstain, Against) are aggregated
-
-2) **Space.sol** : 
+1) **Space.sol** : 
 - We have modified the vote, execute, and get proposal status function to work with encrypted types of TFHE library.
 - choice enum is converted to encrypted bytes choice
-- votePower is converted from uint256 to euint32
+- votePower is converted from uint256 to euint32 (votePower mapping is where all the votes of (For, Abstain, Against) are aggregated)
 
 3) **Execution Strategies :**
 - changed the functions of `execute` and `getProposalStatus` to have the logic of working with encrypted votePower.

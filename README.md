@@ -33,7 +33,7 @@ npx hardhat test --network inco
 
 ## Multi-chain Branch
 
-This repo demonstrates cross-chain private voting between Inco and Redstone. 
+This repo demonstrates cross-chain private voting between Inco and Redstone. The only logic on Inco is the tallying of the encrypted votes. The rest of the logic (authenticating users, proposal validation strategies, voting strategies remains on the primary chain). We use Hyperlane 's mailbox address to pass messages. We have defined incoendpoint.sol and targetendpoint.sol to pass messages. 
 
 Logic on Inco:
 - __votePower mapping__ : encrypted values of aggregated votes of (For, against, abstain)

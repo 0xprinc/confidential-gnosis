@@ -23,11 +23,10 @@ npx hardhat test --network inco
 This repo demonstrates cross-chain private voting between Inco and Redstone. 
 
 Contracts on Inco: 
-
-
+Execution Strategy Module 
 
 Contracts on Redstone: 
-
+Rest of the Code 
 
 
 ## Cylic Transaction Branch
@@ -35,7 +34,11 @@ Contracts on Redstone:
  
 This repo demonstrates cross-chain private voting between Inco and Redstone. The key difference between the multi-chain and cylic transaction branch is that the execution also happens on Redstone. 
 
+Contracts on Inco: 
+Modified Execution Strategy Module. 
 
+Contracts on Redstone: 
+Rest of the code. 
 
 
  

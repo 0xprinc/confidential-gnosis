@@ -9,7 +9,7 @@ We have made modifications to the following contracts:
 
 
 Space.sol: We have modified the vote, execute, and get proposal status function. 
-
+Execution Strategies. 
 
 To compile the code: 
 
@@ -29,7 +29,7 @@ npx hardhat test --network inco
 This repo demonstrates cross-chain private voting between Inco and Redstone. 
 
 Contracts on Inco: 
-Execution Strategy Module 
+Execution Strategy Module which requires TFHE logic
 
 Contracts on Redstone: 
 Rest of the Code 
@@ -41,7 +41,7 @@ Rest of the Code
 This repo demonstrates cross-chain private voting between Inco and Redstone. The key difference between the multi-chain and cylic transaction branch is that the execution also happens on Redstone. 
 
 Contracts on Inco: 
-Modified Execution Strategy Module. 
+Modified Execution Strategy Module. Now the execution remains on Redstone, Inco sends the tallied result to Inco.
 
 Contracts on Redstone: 
 Rest of the code. 

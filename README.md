@@ -51,6 +51,9 @@ To test the code:
 npx hardhat crossdeploy --network redstone
 ```
 
+Changes made :
+- `vote` and `execute` function are changed to call `targetEndpoint` as `votePower` mapping is present in inco
+
 
 ## Cylic Transaction Branch
  

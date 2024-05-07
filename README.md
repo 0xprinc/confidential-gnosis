@@ -28,11 +28,14 @@ npx hardhat test --network inco
 
 This repo demonstrates cross-chain private voting between Inco and Redstone. 
 
-Contracts on Inco: 
-Execution Strategy Module which requires TFHE logic
+What's on Inco:
+- __votePower mapping__ : encrypted values of aggregated votes of (For, against, abstain)
+- __inco endpoint contract__ : used for receiving crosschain calls from target chain(redstone)
+- __Execution Strategy Module__ : which accesses the votePower mapping and executes
 
-Contracts on Redstone: 
-Rest of the Code 
+What's on Redstone: 
+- __target Endpoint contract__ : used for sending data to inco endpoint contract
+- all other modules and Space.sol(main contract)
 
 
 ## Cylic Transaction Branch

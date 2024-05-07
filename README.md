@@ -14,6 +14,7 @@ Execution Strategies.
 To compile the code: 
 
 ```sh
+pnpm install
 npx hardhat compile --network inco 
 ```
 
@@ -36,6 +37,19 @@ What's on Inco:
 What's on Redstone: 
 - __target Endpoint contract__ : used for sending data to inco endpoint contract
 - all other modules and Space.sol(main contract)
+
+To compile the code: 
+
+```sh
+pnpm install
+npx hardhat compile --network inco 
+```
+
+To test the code: 
+
+```sh
+npx hardhat crossdeploy --network redstone
+```
 
 
 ## Cylic Transaction Branch

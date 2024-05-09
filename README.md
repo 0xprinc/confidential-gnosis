@@ -31,7 +31,7 @@ npx hardhat test --network inco
 
 ## Cross-Chain voting Branch
 
-This repo demonstrates cross-chain private voting between Inco and Redstone. The only logic on Inco is the tallying of the encrypted votes. The rest of the logic (authenticating users, proposal validation strategies, voting strategies remains on the primary chain). We use Hyperlane 's mailbox address to pass messages. We have defined incoendpoint.sol and targetendpoint.sol to pass messages. 
+This repo demonstrates cross-chain private voting between Inco and Redstone. The logic of tallying and execution of the proposal remains on Inco. The rest of the logic (authenticating users, proposal validation strategies, voting strategies remains on the primary chain). We use Hyperlane 's mailbox address to pass messages. We have defined Incoendpoint.sol and Targetendpoint.sol to pass messages. 
 
 The modifications we made earlier remain the same but we spilt the codebase in the following manner:
 
@@ -64,7 +64,7 @@ Changes made :
 ## Cross-chain voting with modified execution logic branch
  
  
-This repo demonstrates cross-chain private voting between Inco and Redstone. The key difference between the multi-chain and cylic transaction branch is that the execution also happens on Redstone. 
+This repo demonstrates cross-chain private voting between Inco and Redstone. The key difference between the multi-chain and cylic transaction branch is that the execution also happens on Redstone. The only logic on Inco is the tallying of the encrypted votes. 
 
 Contracts on Inco: 
 Modified Execution Strategy Module. Now the execution remains on Redstone, Inco sends the tallied result to Inco.

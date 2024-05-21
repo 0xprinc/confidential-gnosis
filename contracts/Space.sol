@@ -72,7 +72,7 @@ contract Space is ISpace, Initializable, IERC4824, UUPSUpgradeable, OwnableUpgra
     /// @inheritdoc ISpaceState
     mapping(uint256 proposalId => Proposal proposal) public override proposals;
     // @inheritdoc ISpaceState
-    mapping(uint256 proposalId => mapping(uint8 choice => euint32 votePower)) private votePower;       // choice made public
+    mapping(uint256 proposalId => mapping(uint8 choice => euint32 votePower)) private votePower;       
     /// @inheritdoc ISpaceState
     mapping(uint256 proposalId => mapping(address voter => uint256 hasVoted)) public override voteRegistry;
 

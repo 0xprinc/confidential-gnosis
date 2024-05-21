@@ -70,11 +70,22 @@ abstract contract SimpleQuorumExecutionStrategy is IExecutionStrategy, SpaceMana
         }
     }
 
+    ///@dev Checks if the quorum is reached based on the votes for and abstain votes.
+    ///@param _quorum The quorum threshold.
+    ///@param _votesFor The number of votes in favor.
+    ///@param _votesAbstain The number of abstain votes.
+    ///@return True if quorum is reached, false otherwise.
+
     function _quorumReached(uint256 _quorum, euint32 _votesFor, euint32 _votesAbstain) internal view returns (bool) {           //@votePower
         euint32 forAndAbstainVotesTotal = _votesFor + _votesAbstain;
         return TFHE.decrypt(TFHE.ge(forAndAbstainVotesTotal,TFHE.asEuint8(_quorum)));
     }
 
+    /// @dev Checks if the votes for are greater than the votes against.
+    /// @param _votesFor The number of votes in favor.
+    /// @param _votesAgainst The number of votes against.
+    /// @return True if votes for are greater than votes against, false otherwise.
+ 
     function _supported(euint32 _votesFor, euint32 _votesAgainst) internal view returns (bool) {            //@votePower
         return TFHE.decrypt(TFHE.gt(_votesFor,_votesAgainst));
     }

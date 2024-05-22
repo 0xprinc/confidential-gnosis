@@ -19,6 +19,19 @@ votePower[proposalId][TFHE.decrypt(TFHE.asEuint8(choice))] = TFHE.add(votePower[
 2) **Execution Strategy Module :**
 - changed the functions of `execute` and `getProposalStatus` to have the logic of working with encrypted votePower.
 
+```solidity
+function _quorumReached(uint256 _quorum, euint32 _votesFor, euint32 _votesAbstain) internal view returns (bool) {      
+        euint32 forAndAbstainVotesTotal = _votesFor + _votesAbstain;
+        return TFHE.decrypt(TFHE.ge(forAndAbstainVotesTotal,TFHE.asEuint8(_quorum)));
+    }
+ ```
+
+```solidity
+function _supported(euint32 _votesFor, euint32 _votesAgainst) internal view returns (bool) {            
+        return TFHE.decrypt(TFHE.gt(_votesFor,_votesAgainst));
+    }
+ ```
+
 To compile the code: 
 
 ```sh
@@ -31,47 +44,3 @@ To test the code:
 ```sh
 npx hardhat test --network inco 
 ```
-
-
-## Cross-Chain voting Branch
-
-This repo demonstrates cross-chain private voting between Inco and Redstone. The logic of tallying and execution of the proposal remains on Inco. The rest of the logic (authenticating users, proposal validation strategies, voting strategies remains on the primary chain). We use Hyperlane 's mailbox address to pass messages. We have defined Incoendpoint.sol and Targetendpoint.sol to pass messages. 
-
-The modifications we made earlier remain the same but we spilt the codebase in the following manner:
-
-Logic on Inco:
-- __votePower mapping__ : encrypted values of aggregated votes of (For, against, abstain)
-- __inco endpoint contract__ : used for receiving crosschain calls from target chain(redstone)
-- __Execution Strategy Module__ : which accesses the votePower mapping and executes
-
-Logic on Redstone: 
-- __target Endpoint contract__ : used for sending data to inco endpoint contract
-- all other modules and Space.sol(main contract)
-
-To compile the code: 
-
-```sh
-pnpm install
-npx hardhat compile --network inco 
-```
-
-To test the code: 
-
-```sh
-npx hardhat crossdeploy --network redstone
-```
-
-Changes made :
-- `vote` and `execute` function are changed to call `targetEndpoint` as `votePower` mapping is present in inco
-
-
-## Cross-chain voting with modified execution logic branch
- 
- 
-This repo demonstrates cross-chain private voting between Inco and Redstone. The key difference between the multi-chain and cylic transaction branch is that the execution also happens on Redstone. The only logic on Inco is the tallying of the encrypted votes. 
-
-Contracts on Inco: 
-Modified Execution Strategy Module. Now the execution remains on Redstone, Inco sends the tallied result to Inco.
-
-Contracts on Redstone: 
-Rest of the code. 

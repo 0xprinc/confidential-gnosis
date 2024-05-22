@@ -1,8 +1,7 @@
 We have made modifications to the SnapshotX core repo which you can find here: https://github.com/snapshot-labs/sx-evm  
 
-There are three branches in this repo: 
 
-## Main Branch 
+## Description
 This repo demonstrates private voting on Inco. The key change that we have made is changing the enum Choice in the original repo.  
 
 We have made modifications to the following contracts:
@@ -31,6 +30,8 @@ function _supported(euint32 _votesFor, euint32 _votesAgainst) internal view retu
         return TFHE.decrypt(TFHE.gt(_votesFor,_votesAgainst));
     }
  ```
+
+## Testing 
 
 To compile the code: 
 

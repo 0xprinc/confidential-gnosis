@@ -12,6 +12,10 @@ We have made modifications to the following contracts:
 - choice enum is converted to encrypted bytes choice
 - votePower is converted from uint256 to euint32 (votePower mapping is where all the votes of (For, Abstain, Against) are aggregated)
 
+```solidity
+votePower[proposalId][TFHE.decrypt(TFHE.asEuint8(choice))] = TFHE.add(votePower[proposalId][TFHE.decrypt(TFHE.asEuint8(choice))], votingPower);
+```
+
 2) **Execution Strategy Module :**
 - changed the functions of `execute` and `getProposalStatus` to have the logic of working with encrypted votePower.
 

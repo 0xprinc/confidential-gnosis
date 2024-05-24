@@ -72,7 +72,7 @@ contract Space is ISpace, Initializable, IERC4824, UUPSUpgradeable, OwnableUpgra
     /// @inheritdoc ISpaceState
     mapping(uint256 proposalId => Proposal proposal) public override proposals;
     // @inheritdoc ISpaceState
-    mapping(uint256 proposalId => mapping(uint8 choice => euint32 votePower)) private votePower;       // choice made public
+    mapping(uint256 proposalId => mapping(uint8 choice => euint32 votePower)) private votePower;
     /// @inheritdoc ISpaceState
     mapping(uint256 proposalId => mapping(address voter => uint256 hasVoted)) public override voteRegistry;
 
@@ -97,6 +97,10 @@ contract Space is ISpace, Initializable, IERC4824, UUPSUpgradeable, OwnableUpgra
         emit SpaceCreated(address(this), input);
     }
 
+    /// @dev Reencrypt the votepower using the publicKey of fhEVM instance to output votepower as bytes 
+    /// @param proposalId  
+    /// @param choice of the voter 
+    /// @param publicKey of the fhEVM instance
     function getVotePower(uint256 proposalId, uint8 choice, bytes32 publicKey) public view returns (bytes memory) {
         return TFHE.reencrypt(votePower[proposalId][choice], publicKey, 0);
     }
@@ -187,6 +191,7 @@ contract Space is ISpace, Initializable, IERC4824, UUPSUpgradeable, OwnableUpgra
     // |                                  |
     // ------------------------------------
     // For = 1, Against = 0, Abstain = 2
+    ///@dev Returns the status of the proposal 
     
     function getProposalStatus(uint256 proposalId) external view override returns (ProposalStatus) {    
         Proposal memory proposal = proposals[proposalId];
@@ -246,7 +251,12 @@ contract Space is ISpace, Initializable, IERC4824, UUPSUpgradeable, OwnableUpgra
         nextProposalId++;
     }
 
-    /// @inheritdoc ISpaceActions
+    /// @dev Casts a vote on a proposal. The function updates the vote registry and voting power, and emits a VoteCast or VoteCastWithMetadata event.
+    /// @param voter The address casting the vote.
+    /// @param proposalId The ID of the proposal.
+    /// @param choice The encrypted voting choice.
+    /// @param userVotingStrategies Strategies for calculating voting power.
+    /// @param metadataURI Optional metadata URI.
 
     function vote(
         address voter,
@@ -262,7 +272,7 @@ contract Space is ISpace, Initializable, IERC4824, UUPSUpgradeable, OwnableUpgra
         if (proposal.finalizationStatus != FinalizationStatus.Pending) revert ProposalFinalized();
         if (voteRegistry[proposalId][voter] != FALSE) revert UserAlreadyVoted();
 
-        // tbd require statement
+        // TODO: Require statement for validating choice
 
         voteRegistry[proposalId][voter] = TRUE;
 
@@ -290,6 +300,9 @@ contract Space is ISpace, Initializable, IERC4824, UUPSUpgradeable, OwnableUpgra
     }
 
     /// @inheritdoc ISpaceActions
+    /// @dev Executes a proposal using the given execution payload. The function updates the proposal's finalization status to avoid reentrancy issues, then calls the execution strategy. Emits a ProposalExecuted event.
+    /// @param proposalId The ID of the proposal to execute.
+    /// @param executionPayload The payload for executing the proposal.
     function execute(uint256 proposalId, bytes calldata executionPayload) external override nonReentrant {      //@votePower
         Proposal storage proposal = proposals[proposalId];
         _assertProposalExists(proposal);
@@ -424,7 +437,7 @@ contract Space is ISpace, Initializable, IERC4824, UUPSUpgradeable, OwnableUpgra
     }
 
     /// @dev Returns the cumulative voting power of a user over a set of voting strategies.
-    function _getCumulativePower(//@votePower   should return the euint256          // @tbd
+    function _getCumulativePower(
         address userAddress,
         uint32 blockNumber,
         IndexedStrategy[] calldata userStrategies,

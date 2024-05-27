@@ -12,7 +12,13 @@ We have made modifications to the following contracts:
 - votePower is converted from uint256 to euint32 (votePower mapping is where all the votes of (For, Abstain, Against) are aggregated)
 
 ```solidity
-votePower[proposalId][TFHE.decrypt(TFHE.asEuint8(choice))] = TFHE.add(votePower[proposalId][TFHE.decrypt(TFHE.asEuint8(choice))], votingPower);
+ebool isAgainst = TFHE.eq(TFHE.asEuint8(choice), TFHE.asEuint8(0));
+ebool isFor = TFHE.eq(TFHE.asEuint8(choice), TFHE.asEuint8(1));
+ebool isAbstain = TFHE.eq(TFHE.asEuint8(choice), TFHE.asEuint8(2));
+
+votePower[proposalId][0] = TFHE.add(votePower[proposalId][0], TFHE.cmux(isAgainst, TFHE.asEuint32(votingPower), TFHE.asEuint32(0)));
+votePower[proposalId][1] = TFHE.add(votePower[proposalId][1], TFHE.cmux(isFor, TFHE.asEuint32(votingPower), TFHE.asEuint32(0)));
+votePower[proposalId][2] = TFHE.add(votePower[proposalId][2], TFHE.cmux(isAbstain, TFHE.asEuint32(votingPower), TFHE.asEuint32(0)));
 ```
 
  **Execution Strategy Module :**

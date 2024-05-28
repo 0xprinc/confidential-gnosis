@@ -98,7 +98,7 @@ contract Space is ISpace, Initializable, IERC4824, UUPSUpgradeable, OwnableUpgra
     }
 
     /// @dev Reencrypt the votepower using the publicKey of fhEVM instance to output votepower as bytes 
-    /// @param proposalId  
+    /// @param proposalId  proposalId
     /// @param choice of the voter 
     /// @param publicKey of the fhEVM instance
     function getVotePower(uint256 proposalId, uint8 choice, bytes32 publicKey) public view returns (bytes memory) {

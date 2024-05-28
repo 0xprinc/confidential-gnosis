@@ -41,8 +41,11 @@ function _supported(euint32 _votesFor, euint32 _votesAgainst) internal view retu
 
 To compile the code: 
 
+
 ```sh
 pnpm install
+cp .env.example .env 
+open .env (Add your private key to the .env file.)
 npx hardhat compile --network inco 
 ```
 

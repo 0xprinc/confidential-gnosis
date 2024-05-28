@@ -26,6 +26,7 @@ describe("Space", function () {
 
   it("initialize space", async function () {
 
+    console.log("\n 1) Deploying contracts... \n")
     const contractSpace = await deploySpace();
     const contractVotingStrategy = await deployVotingStrategy();
     const contractExecutionStrategy = await deployExecutionStrategy();
@@ -42,7 +43,7 @@ describe("Space", function () {
     let fhevmInstance = await createInstances(addressSpace, ethers, this.signers);
 
 {
-    console.log("\n\n\n\ninitializing Space contract \n");
+    console.log("\n\ 2) Initializing Space contract \n");
     
     let data0 : StrategyStruct = {
       addr: addressValidationStrategy,
@@ -87,7 +88,7 @@ describe("Space", function () {
 }
 
 {
-    console.log("\n\n\n\n\n making a proposal \n");
+    console.log("\n 3) Making a proposal \n");
 
     let data2propose =
       [
@@ -108,18 +109,18 @@ describe("Space", function () {
 
       // Wait for 1 confirmation (adjust confirmations as needed)
       await txn.wait(1);
-      console.log("Transaction2 successful!");
+      console.log("proposal successful!");
     } catch (error) {
       console.error("Transaction failed:", error);
       // Handle the error appropriately (e.g., retry, notify user)
     }
     
-    console.log("new proposal -> " + await contractSpace.proposals(1));
+    // console.log("new proposal -> " + await contractSpace.proposals(1));
 
 }
 
 {
-    console.log("\n\n\n\n\n voting \n");
+    console.log("\n\ 4) Voting \n");
 
     let data2voteAbstain = [
       addressSigner,
@@ -149,15 +150,14 @@ describe("Space", function () {
       [[0,"0x"]],
       ""
     ];
-    // console.log("votePower before vote -> " + (await contractSpace.votePower(1, 2)).toString());
-    console.log("current block number -> " + await ethers.provider.getBlockNumber());
+
     try {
       const txn = await contractAuthenticator.authenticate(addressSpace, '0x954ee6da', AbiCoder.defaultAbiCoder().encode(["address", "uint256", "bytes", "tuple(uint8, bytes)[]", "string"], data2voteAgainst));
       console.log("Transaction hash:", txn.hash);
 
       // Wait for 1 confirmation (adjust confirmations as needed)
       await txn.wait(1);
-      console.log("Against successful!");
+      console.log("Against vote successful!");
     } catch (error) {
       console.error("Transaction failed:", error);
       // Handle the error appropriately (e.g., retry, notify user)
@@ -168,7 +168,7 @@ describe("Space", function () {
 
       // Wait for 1 confirmation (adjust confirmations as needed)
       await txn.wait(1);
-      console.log("For1 successful!");
+      console.log("For vote successful!");
     } catch (error) {
       console.error("Transaction failed:", error);
       // Handle the error appropriately (e.g., retry, notify user)
@@ -179,7 +179,7 @@ describe("Space", function () {
 
       // Wait for 1 confirmation (adjust confirmations as needed)
       await txn.wait(1);
-      console.log("For2 successful!");
+      console.log("For vote successful!");
     } catch (error) {
       console.error("Transaction failed:", error);
       // Handle the error appropriately (e.g., retry, notify user)
@@ -190,34 +190,33 @@ describe("Space", function () {
 
       // Wait for 1 confirmation (adjust confirmations as needed)
       await txn.wait(1);
-      console.log("Abstain successful!");
+      console.log("Abstain vote successful!");
     } catch (error) {
       console.error("Transaction failed:", error);
       // Handle the error appropriately (e.g., retry, notify user)
     }
-    console.log("current block number -> " + await ethers.provider.getBlockNumber());
+    // console.log("current block number -> " + await ethers.provider.getBlockNumber());
 
 
-    const token = fhevmInstance.alice.getTokenSignature(addressSpace) || {
+    const token = fhevmInstance.alice.getPublicKey(addressSpace) || {
       signature: "",
       publicKey: "",
     };
 
+    console.log("\n\ 5) Checking votes \n");
     let For_votes = (await contractSpace.getVotePower(1, 1, token.publicKey)).toString();
     let Abstain_votes = (await contractSpace.getVotePower(1, 2, token.publicKey)).toString();
     let Against_votes = (await contractSpace.getVotePower(1, 0, token.publicKey)).toString();
-    console.log(For_votes);
-    console.log(Abstain_votes);
-    console.log(Against_votes);
+    // console.log(For_votes);
+    // console.log(Abstain_votes);
+    // console.log(Against_votes);
     
     console.log("For votes -> " +     fhevmInstance.alice.decrypt(addressSpace, For_votes));
     console.log("Abstain votes -> " + fhevmInstance.alice.decrypt(addressSpace, Abstain_votes));
     console.log("Against votes -> " + fhevmInstance.alice.decrypt(addressSpace, Against_votes));
 }
 
-
-    console.log("current block number -> " + await ethers.provider.getBlockNumber());
-    console.log("\n\n\n\n execution \n");
+    console.log("\n 6) Execution \n");
     let executionPayload = "0x";
     try {
       const txn = await contractSpace.execute(1, executionPayload);
@@ -231,7 +230,7 @@ describe("Space", function () {
       // Handle the error appropriately (e.g., retry, notify user)
     }
     
-    console.log("1 if executed -> " + (await contractSpace.proposals(1)).finalizationStatus);
+    // console.log("1 if executed -> " + (await contractSpace.proposals(1)).finalizationStatus);
   });
 
 });

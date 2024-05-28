@@ -45,7 +45,6 @@ To compile the code:
 ```sh
 pnpm install
 cp .env.example .env 
-open .env (Add your private key to the .env file.)
 npx hardhat compile --network inco 
 ```
 

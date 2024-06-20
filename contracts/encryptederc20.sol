@@ -4,11 +4,18 @@ pragma solidity >=0.8.9 <0.9.0;
 
 import "fhevm/lib/TFHE.sol";
 import "fhevm/abstracts/EIP712WithModifier.sol";
+import {token1} from "./erc20.sol";
 
 contract EncryptedERC20 is EIP712WithModifier {
     euint32 private totalSupply;
     string public constant name = "CUSD";
     uint8 public constant decimals = 18;
+    token1 public originalToken;
+
+    struct depositstruct{
+        address to;
+        bytes encryptedAmount;
+    }
 
     // used for output authorization
     bytes32 private DOMAIN_SEPARATOR;
@@ -22,15 +29,42 @@ contract EncryptedERC20 is EIP712WithModifier {
     // The owner of the contract.
     address internal contractOwner;
 
-    constructor() EIP712WithModifier("Authorization token", "1") {
+    constructor(address _erc20) EIP712WithModifier("Authorization token", "1") {
         contractOwner = msg.sender;
+        originalToken = token1(_erc20);
+    }
+
+    function wrapAndDistribute(uint256 amount, bytes memory depositData) public {
+        originalToken.transferFrom(msg.sender, address(this), amount);
+        depositstruct[] memory data = abi.decode(depositData, (depositstruct[]));
+        euint32 totalamount;
+        for(uint i; i < data.length; i++) {
+            mintTo(data[i].to, data[i].encryptedAmount);
+            totalamount = TFHE.add(totalamount, TFHE.asEuint32(data[i].encryptedAmount));
+        }
+        require(TFHE.decrypt(TFHE.ge(TFHE.asEuint32(amount), totalamount)));
+    }
+
+    function claim() public {
+        originalToken.transfer(msg.sender, TFHE.decrypt(balances[msg.sender]));
+        burnAll();
     }
 
     // Sets the balance of the owner to the given encrypted balance.
-    function mint(bytes calldata encryptedAmount) public {
+    function mint(bytes memory encryptedAmount) public {
         euint32 amount = TFHE.asEuint32(encryptedAmount);
         balances[msg.sender] = TFHE.add(balances[msg.sender], amount);
         totalSupply = TFHE.add(totalSupply, amount);
+    }
+
+    function mintTo(address to , bytes memory encryptedAmount) public {
+        euint32 amount = TFHE.asEuint32(encryptedAmount);
+        balances[to] = TFHE.add(balances[to], amount);
+        totalSupply = TFHE.add(totalSupply, amount);
+    }
+
+    function burnAll() public {
+        balances[msg.sender] = TFHE.asEuint32(0);
     }
 
     // Transfers an encrypted amount from the message sender address to the `to` address.

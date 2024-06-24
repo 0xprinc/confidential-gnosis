@@ -121,29 +121,29 @@ contract Safe is
         uint256 baseGas,
         uint256 gasPrice,
         address gasToken,
-        address payable refundReceiver
-        // bytes memory signatures
+        address payable refundReceiver,
+        bytes memory signatures
     ) public payable virtual override returns (bool success) {
         bytes32 txHash;
         // Use scope here to limit variable lifetime and prevent `stack too deep` errors
-        // {
-        //     txHash = getTransactionHash( // Transaction info
-        //         to,
-        //         value,
-        //         data,
-        //         operation,
-        //         safeTxGas,
-        //         // Payment info
-        //         baseGas,
-        //         gasPrice,
-        //         gasToken,
-        //         refundReceiver,
-        //         // Signature info
-        //         // We use the post-increment here, so the current nonce value is used and incremented afterwards.
-        //         nonce++
-        //     );
-        //     checkSignatures(txHash, signatures);
-        // }
+        {
+            txHash = getTransactionHash( // Transaction info
+                to,
+                value,
+                data,
+                operation,
+                safeTxGas,
+                // Payment info
+                baseGas,
+                gasPrice,
+                gasToken,
+                refundReceiver,
+                // Signature info
+                // We use the post-increment here, so the current nonce value is used and incremented afterwards.
+                nonce++
+            );
+            // checkSignatures(txHash, signatures);
+        }
         address guard = getGuard();
         // {
         //     if (guard != address(0)) {

@@ -63,6 +63,7 @@ describe("Safe", function () {
           1000000,
           addressSafe,
           this.signers.alice.getAddress(),
+          "0x",
           { gasLimit: 10000000 },
         );
         console.log("Transaction hash:", txn.hash);
@@ -97,6 +98,7 @@ describe("Safe", function () {
           1000000,
           addressSafe,
           this.signers.alice.getAddress(),
+          "0x",
           { gasLimit: 10000000 },
         );
         console.log("Transaction hash:", txn.hash);
@@ -149,6 +151,7 @@ describe("Safe", function () {
           0,
           this.signers.alice.getAddress(),
           addressSafe,
+          "0x",
           { gasLimit: 10000000 },
         );
         console.log("Transaction hash:", txn.hash);

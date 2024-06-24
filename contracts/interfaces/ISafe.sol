@@ -70,8 +70,8 @@ interface ISafe is IModuleManager, IGuardManager, IOwnerManager, IFallbackManage
         uint256 baseGas,
         uint256 gasPrice,
         address gasToken,
-        address payable refundReceiver
-        // bytes memory signatures
+        address payable refundReceiver,
+        bytes memory signatures
     ) external payable returns (bool success);
 
     /**

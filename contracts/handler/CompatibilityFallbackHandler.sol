@@ -81,7 +81,6 @@ contract CompatibilityFallbackHandler is TokenCallbackHandler, ISignatureValidat
     /**
      * @dev Performs a delegatecall on a targetContract in the context of self.
      * Internally reverts execution to avoid side effects (making it static). Catches revert and returns encoded result as bytes.
-     * @dev Inspired by https://github.com/gnosis/util-contracts/blob/bb5fe5fb5df6d8400998094fb1b32a178a47c3a1/contracts/StorageAccessible.sol
      * @param targetContract Address of the contract containing the code to execute.
      * @param calldataPayload Calldata that should be sent to the target contract (encoded method name and arguments).
      */

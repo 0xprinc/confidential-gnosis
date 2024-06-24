@@ -78,6 +78,10 @@ contract Safe is
         threshold = 1;
     }
 
+    function getAddress() public view returns (address) {
+        return address(this);
+    }
+
     /**
      * @inheritdoc ISafe
      */
@@ -117,50 +121,50 @@ contract Safe is
         uint256 baseGas,
         uint256 gasPrice,
         address gasToken,
-        address payable refundReceiver,
-        bytes memory signatures
+        address payable refundReceiver
+        // bytes memory signatures
     ) public payable virtual override returns (bool success) {
         bytes32 txHash;
         // Use scope here to limit variable lifetime and prevent `stack too deep` errors
-        {
-            txHash = getTransactionHash( // Transaction info
-                to,
-                value,
-                data,
-                operation,
-                safeTxGas,
-                // Payment info
-                baseGas,
-                gasPrice,
-                gasToken,
-                refundReceiver,
-                // Signature info
-                // We use the post-increment here, so the current nonce value is used and incremented afterwards.
-                nonce++
-            );
-            checkSignatures(txHash, signatures);
-        }
+        // {
+        //     txHash = getTransactionHash( // Transaction info
+        //         to,
+        //         value,
+        //         data,
+        //         operation,
+        //         safeTxGas,
+        //         // Payment info
+        //         baseGas,
+        //         gasPrice,
+        //         gasToken,
+        //         refundReceiver,
+        //         // Signature info
+        //         // We use the post-increment here, so the current nonce value is used and incremented afterwards.
+        //         nonce++
+        //     );
+        //     checkSignatures(txHash, signatures);
+        // }
         address guard = getGuard();
-        {
-            if (guard != address(0)) {
-                ITransactionGuard(guard).checkTransaction(
-                    // Transaction info
-                    to,
-                    value,
-                    data,
-                    operation,
-                    safeTxGas,
-                    // Payment info
-                    baseGas,
-                    gasPrice,
-                    gasToken,
-                    refundReceiver,
-                    // Signature info
-                    signatures,
-                    msg.sender
-                );
-            }
-        }
+        // {
+        //     if (guard != address(0)) {
+        //         ITransactionGuard(guard).checkTransaction(
+        //             // Transaction info
+        //             to,
+        //             value,
+        //             data,
+        //             operation,
+        //             safeTxGas,
+        //             // Payment info
+        //             baseGas,
+        //             gasPrice,
+        //             gasToken,
+        //             refundReceiver,
+        //             // Signature info
+        //             signatures,
+        //             msg.sender
+        //         );
+        //     }
+        // }
 
         // We require some gas to emit the events (at least 2500) after the execution and some to perform code until the execution (500)
         // We also include the 1/64 in the check that is not send along with a call to counteract potential shortings because of EIP-150
@@ -171,6 +175,7 @@ contract Safe is
             // If the gasPrice is 0 we assume that nearly all available gas can be used (it is always more than safeTxGas)
             // We only subtract 2500 (compared to the 3000 before) to ensure that the amount passed is still higher than safeTxGas
             success = execute(to, value, data, operation, gasPrice == 0 ? (gasleft() - 2500) : safeTxGas);
+            require(success);
             gasUsed = gasUsed.sub(gasleft());
             // If no safeTxGas and no gasPrice was set (e.g. both are 0), then the internal tx is required to be successful
             // This makes it possible to use `estimateGas` without issues, as it searches for the minimum gas where the tx doesn't revert

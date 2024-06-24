@@ -14,8 +14,9 @@ abstract contract OwnerManager is SelfAuthorized, IOwnerManager {
     address internal constant SENTINEL_OWNERS = address(0x1);
 
     mapping(address => address) internal owners;
-    uint256 internal ownerCount;
+    uint256 public ownerCount;
     uint256 internal threshold;
+    address public latestOwner;
 
     /**
      * @notice Sets the initial storage of the contract.
@@ -58,6 +59,7 @@ abstract contract OwnerManager is SelfAuthorized, IOwnerManager {
         owners[owner] = owners[SENTINEL_OWNERS];
         owners[SENTINEL_OWNERS] = owner;
         ownerCount++;
+        latestOwner = owner;
         emit AddedOwner(owner);
         // Change threshold if threshold was changed.
         if (threshold != _threshold) changeThreshold(_threshold);

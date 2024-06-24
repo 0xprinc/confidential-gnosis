@@ -1,6 +1,6 @@
 pragma solidity >=0.7.0 <0.9.0;
 
-contract token1 {
+contract Token1 {
     string public name = "token1";
     string public symbol = "token1";
     uint8  public decimals = 18;
@@ -11,10 +11,14 @@ contract token1 {
     event  Withdrawal(address indexed src, uint wad);
 
     mapping(address => uint) public  balanceOf;
-    mapping(address => mapping(address => uint)) public  allowance;
+    mapping(address => mapping(address => uint)) internal  allowance;
 
-    function mint(uint256 amount) public {
-        balanceOf[msg.sender] += amount;
+    function getallowance(address from, address to) public view returns (uint) {
+        return allowance[from][to];
+    }
+
+    function mint(address to, uint256 amount) public {
+        balanceOf[to] += amount;
     }
 
     function burn(uint256 wad) public {
@@ -26,13 +30,17 @@ contract token1 {
         return address(this).balance;
     }
 
-    function approve(address guy, uint wad) public returns (bool) {
+    function getAddress() public view returns (address) {
+        return address(this);
+    }
+
+    function approve(address guy, uint256 wad) public returns (bool) {
         allowance[msg.sender][guy] = wad;
         emit Approval(msg.sender, guy, wad);
         return true;
     }
 
-    function transfer(address dst, uint wad) public returns (bool) {
+    function transfer(address dst, uint wad) public returns (bool){
         return transferFrom(msg.sender, dst, wad);
     }
 
@@ -40,14 +48,14 @@ contract token1 {
     public
     returns (bool)
     {
-        require(balanceOf[src] >= wad);
+        // require(balanceOf[src] >= wad);
 
         if (src != msg.sender && allowance[src][msg.sender] != type(uint256).max) {
             require(allowance[src][msg.sender] >= wad);
             allowance[src][msg.sender] -= wad;
         }
 
-        balanceOf[src] -= wad;
+        // balanceOf[src] -= wad;
         balanceOf[dst] += wad;
 
         emit Transfer(src, dst, wad);

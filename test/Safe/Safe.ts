@@ -23,26 +23,6 @@ import { Address } from "hardhat-deploy/dist/types";
 
 // Remove the duplicate import statement for 'ethers'
 
-function customArrayify(hexString: string): Uint8Array {
-  if (!hexString.startsWith("0x")) {
-      throw new Error("Invalid hex string: no 0x prefix");
-  }
-
-  // Remove the 0x prefix
-  hexString = hexString.slice(2);
-
-  if (hexString.length % 2 !== 0) {
-      throw new Error("Invalid hex string: length must be even");
-  }
-
-  const byteArray = new Uint8Array(hexString.length / 2);
-  for (let i = 0; i < byteArray.length; i++) {
-      byteArray[i] = parseInt(hexString.substr(i * 2, 2), 16);
-  }
-
-  return byteArray;
-}
-
 describe("Safe", function () {
   before(async function () {
     this.signers = await getSigners(ethers);
@@ -50,13 +30,26 @@ describe("Safe", function () {
 
   it("initialize space", async function () {
     console.log("\n 1) Deploying contracts... \n");
-    const contractSafe = await deploySafe();  
+    const contractOwnerSafe = await deploySafe();  
+    const contractBobSafe = await deploySafe();  
+    const contractCarolSafe = await deploySafe();  
+    const contractDaveSafe = await deploySafe();  
     const contractERC20 = await deployERC20();
     const contractEncryptedERC20 = await deployEncryptedERC20(await contractERC20.getAddress());
 
-    const addressSafe = await contractSafe.getAddress();
+    const addressOwnerSafe = await contractOwnerSafe.getAddress();
+    const addressBobSafe = await contractBobSafe.getAddress();
+    const addressCarolSafe = await contractCarolSafe.getAddress();
+    const addressDaveSafe = await contractDaveSafe.getAddress();
     const addressERC20 = await contractERC20.getAddress();
     const addressEncryptedERC20 = await contractEncryptedERC20.getAddress();
+
+    console.log("owner safe address: " + addressOwnerSafe);
+    console.log("bob safe address: " + addressBobSafe);
+    console.log("carol safe address: " + addressCarolSafe);
+    console.log("dave safe address: " + addressDaveSafe);
+    console.log("erc20 address: " + addressERC20);
+    console.log("encrypted erc20 address: " + addressEncryptedERC20);
 
     let fhevmInstance = await createInstances(addressEncryptedERC20, ethers, this.signers);
     const token = fhevmInstance.alice.getPublicKey(addressEncryptedERC20) || {
@@ -65,78 +58,149 @@ describe("Safe", function () {
     };
 
     {
-      console.log("\n 2) Initializing Safe contract\n");
+      console.log("\n 2) Initializing Safe contract (setting up an owner of the safe)\n");
 
-      let txnhash = await contractSafe.getTransactionHash(
-        addressSafe,
-        0,
-        "0x0d582f130000000000000000000000005f4e77a22e394b51dc7efb8e3c78121e489e78cd0000000000000000000000000000000000000000000000000000000000000001",
-        0,
-        1000000,
-        0,
-        1000000,
-        addressSafe,
-        this.signers.alice.getAddress(),
-        await contractSafe.nonce()
-      );
+      // let txnhash = await contractOwnerSafe.getTransactionHash(
+      //   addressOwnerSafe,
+      //   0,
+      //   "0x0d582f130000000000000000000000005f4e77a22e394b51dc7efb8e3c78121e489e78cd0000000000000000000000000000000000000000000000000000000000000001",
+      //   0,
+      //   1000000,
+      //   0,
+      //   1000000,
+      //   addressOwnerSafe,
+      //   this.signers.alice.getAddress(),
+      //   await contractOwnerSafe.nonce()
+      // );
 
-      const txn = {
-        to: addressSafe,
-        value : 0,
-        data : "0x0d582f130000000000000000000000005f4e77a22e394b51dc7efb8e3c78121e489e78cd0000000000000000000000000000000000000000000000000000000000000001",
-        operation : 0,
-        safeTxGas : 1000000,
-        baseGas : 0,
-        gasPrice : 1000000,
-        gasToken : addressSafe,
-        refundReceiver : this.signers.alice.getAddress(),
-        nonce : await contractSafe.nonce()
-      };
+      // const txn = {
+      //   to: addressOwnerSafe,
+      //   value : 0,
+      //   data : "0x0d582f130000000000000000000000005f4e77a22e394b51dc7efb8e3c78121e489e78cd0000000000000000000000000000000000000000000000000000000000000001",
+      //   operation : 0,
+      //   safeTxGas : 1000000,
+      //   baseGas : 0,
+      //   gasPrice : 1000000,
+      //   gasToken : addressOwnerSafe,
+      //   refundReceiver : this.signers.alice.getAddress(),
+      //   nonce : await contractOwnerSafe.nonce()
+      // };
 
-      const tx = buildSafeTransaction(txn);
-      const signatureBytes = buildSignatureBytes([await safeApproveHash(this.signers.alice, contractSafe, tx, true)]);
+      // const tx = buildSafeTransaction(txn);
+      // const signatureBytes = buildSignatureBytes([await safeApproveHash(this.signers.alice, contractOwnerSafe, tx, true)]);
 
-      // console.log(await contractSafe.checkSignatures(txnhash,signatureBytes));
+      // console.log(await contractOwnerSafe.checkSignatures(txnhash,signatureBytes));
+
+      let fnSelector = "0x0d582f13";
 
       try {
-        // const txn = await contractSafe.setup([this.signers.alice.getAddress()], 0, this.signers.alice.getAddress(), "0x", this.signers.alice.getAddress(), this.signers.alice.getAddress(), 0, this.signers.alice.getAddress());
-        // const txn = await contractSafe.addOwnerWithThreshold(this.signers.alice.getAddress(), 1);
-        const txn = await contractSafe.execTransaction(
-          addressSafe,
+        // const txn = await contractOwnerSafe.setup([this.signers.alice.getAddress()], 0, this.signers.alice.getAddress(), "0x", this.signers.alice.getAddress(), this.signers.alice.getAddress(), 0, this.signers.alice.getAddress());
+        // const txn = await contractOwnerSafe.addOwnerWithThreshold(this.signers.alice.getAddress(), 1);
+        const txn = await contractOwnerSafe.execTransaction(
+          addressOwnerSafe,
           0,
-          // "0x0d582f1300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001",
-          "0x0d582f130000000000000000000000005f4e77a22e394b51dc7efb8e3c78121e489e78cd0000000000000000000000000000000000000000000000000000000000000001",
-          0,
-          1000000,
+          fnSelector + AbiCoder.defaultAbiCoder().encode(["address", "uint256"], [await this.signers.alice.getAddress(), 1]).slice(2),
+          // "0x0d582f130000000000000000000000005f4e77a22e394b51dc7efb8e3c78121e489e78cd0000000000000000000000000000000000000000000000000000000000000001",
           0,
           1000000,
-          addressSafe,
+          0,
+          1000000,
+          addressOwnerSafe,
           this.signers.alice.getAddress(),
-          signatureBytes,
+          "0x",
           { gasLimit: 10000000 },
         );
         console.log("Transaction hash:", txn.hash);
         await txn.wait(1);
-        console.log("Transaction successful!");
+        console.log("Owner safe initialization successful!");
       } catch (error) {
-        console.error("Transaction failed:", error);
+        console.error("Owner safe initialization failed:", error);
+      }
+      try {
+        // const txn = await contractOwnerSafe.setup([this.signers.alice.getAddress()], 0, this.signers.alice.getAddress(), "0x", this.signers.alice.getAddress(), this.signers.alice.getAddress(), 0, this.signers.alice.getAddress());
+        // const txn = await contractOwnerSafe.addOwnerWithThreshold(this.signers.alice.getAddress(), 1);
+        const txn = await contractBobSafe.execTransaction(
+          addressBobSafe,
+          0,
+          fnSelector + AbiCoder.defaultAbiCoder().encode(["address", "uint256"], [await this.signers.bob.getAddress(), 1]).slice(2),
+          // "0x0d582f130000000000000000000000005f4e77a22e394b51dc7efb8e3c78121e489e78cd0000000000000000000000000000000000000000000000000000000000000001",
+          0,
+          1000000,
+          0,
+          1000000,
+          addressBobSafe,
+          this.signers.alice.getAddress(),
+          "0x",
+          { gasLimit: 10000000 },
+        );
+        console.log("Transaction hash:", txn.hash);
+        await txn.wait(1);
+        console.log("Bob safe initialization successful!");
+      } catch (error) {
+        console.error("Bob safe initialization failed:", error);
+      }
+      try {
+        // const txn = await contractOwnerSafe.setup([this.signers.alice.getAddress()], 0, this.signers.alice.getAddress(), "0x", this.signers.alice.getAddress(), this.signers.alice.getAddress(), 0, this.signers.alice.getAddress());
+        // const txn = await contractOwnerSafe.addOwnerWithThreshold(this.signers.alice.getAddress(), 1);
+        const txn = await contractCarolSafe.execTransaction(
+          addressCarolSafe,
+          0,
+          fnSelector + AbiCoder.defaultAbiCoder().encode(["address", "uint256"], [await this.signers.carol.getAddress(), 1]).slice(2),
+          // "0x0d582f130000000000000000000000005f4e77a22e394b51dc7efb8e3c78121e489e78cd0000000000000000000000000000000000000000000000000000000000000001",
+          0,
+          1000000,
+          0,
+          1000000,
+          addressCarolSafe,
+          this.signers.alice.getAddress(),
+          "0x",
+          { gasLimit: 10000000 },
+        );
+        console.log("Transaction hash:", txn.hash);
+        await txn.wait(1);
+        console.log("Carol safe initialization successful!");
+      } catch (error) {
+        console.error("Carol safe initialization failed:", error);
+      }
+      try {
+        // const txn = await contractOwnerSafe.setup([this.signers.alice.getAddress()], 0, this.signers.alice.getAddress(), "0x", this.signers.alice.getAddress(), this.signers.alice.getAddress(), 0, this.signers.alice.getAddress());
+        // const txn = await contractOwnerSafe.addOwnerWithThreshold(this.signers.alice.getAddress(), 1);
+        const txn = await contractDaveSafe.execTransaction(
+          addressDaveSafe,
+          0,
+          fnSelector + AbiCoder.defaultAbiCoder().encode(["address", "uint256"], [await this.signers.dave.getAddress(), 1]).slice(2),
+          // "0x0d582f130000000000000000000000005f4e77a22e394b51dc7efb8e3c78121e489e78cd0000000000000000000000000000000000000000000000000000000000000001",
+          0,
+          1000000,
+          0,
+          1000000,
+          addressDaveSafe,
+          this.signers.alice.getAddress(),
+          "0x",
+          { gasLimit: 10000000 },
+        );
+        console.log("Transaction hash:", txn.hash);
+        await txn.wait(1);
+        console.log("Dave safe initialization successful!");
+      } catch (error) {
+        console.error("Dave safe initialization failed:", error);
       }
 
       console.log("\n 3) Providing tokens to safe contract\n");
 
       try {
-        const txn = await contractERC20.mint(addressSafe, 1000000);
+        const txn = await contractERC20.mint(addressOwnerSafe, 1000000);
         console.log("Transaction hash:", txn.hash);
         await txn.wait(1);
-        console.log("Transaction successful!");
+        console.log("Minting 1_000_000 tokens to Owner Safe successful!");
       } catch (error) {
-        console.error("Transaction failed:", error);
+        console.error("Minting 1_000_000 tokens to Owner Safe failed:", error);
       }
 
       try {
         let fnSelector = "0x095ea7b3";
 
-        const txn = await contractSafe.execTransaction(
+        const txn = await contractOwnerSafe.execTransaction(
           addressERC20,
           0,
           fnSelector +
@@ -145,7 +209,7 @@ describe("Safe", function () {
           1000000,
           0,
           1000000,
-          addressSafe,
+          addressOwnerSafe,
           this.signers.alice.getAddress(),
           // signatureBytes,
           "0x",
@@ -153,21 +217,22 @@ describe("Safe", function () {
         );
         console.log("Transaction hash:", txn.hash);
         await txn.wait(1);
-        console.log("Transaction successful!");
+        console.log("Approval to EncryptedERC20 successful!");
       } catch (error) {
-        console.error("Transaction failed:", error);
+        console.error("Approval to EncryptedERC20 failed:", error);
       }
 
-      console.log(await contractERC20.getallowance(addressSafe, addressEncryptedERC20));
+      console.log("Allowed no. of tokens: " + await contractERC20.getallowance(addressOwnerSafe, addressEncryptedERC20));
     }
     
       console.log("\n 4) Deposit and distribute\n");
+      console.log("Distributing 10_000, 30_000, 960_000 tokens to Bob, Carol, Dave safes respectively\n");
       let fnSelector = "0xf98aa085";
 
       const amount = 1000000;
-      const data1 = [await this.signers.bob.getAddress(), fhevmInstance.alice.encrypt32(10000)];
-      const data2 = [await this.signers.carol.getAddress(), fhevmInstance.alice.encrypt32(30000)];
-      const data3 = [await this.signers.dave.getAddress(), fhevmInstance.alice.encrypt32(960000)];
+      const data1 = [addressBobSafe, fhevmInstance.alice.encrypt32(10000)];
+      const data2 = [addressCarolSafe, fhevmInstance.alice.encrypt32(30000)];
+      const data3 = [addressDaveSafe, fhevmInstance.alice.encrypt32(960000)];
 
       // Create an array of depositstruct
       const depositData = [data1, data2, data3];
@@ -186,9 +251,9 @@ describe("Safe", function () {
       );
 
       try {
-        // const txn = await contractSafe.setup([this.signers.alice.getAddress()], 0, this.signers.alice.getAddress(), "0x", this.signers.alice.getAddress(), this.signers.alice.getAddress(), 0, this.signers.alice.getAddress());
-        // const txn = await contractSafe.addOwnerWithThreshold(this.signers.alice.getAddress(), 1);
-        const txn = await contractSafe.execTransaction(
+        // const txn = await contractOwnerSafe.setup([this.signers.alice.getAddress()], 0, this.signers.alice.getAddress(), "0x", this.signers.alice.getAddress(), this.signers.alice.getAddress(), 0, this.signers.alice.getAddress());
+        // const txn = await contractOwnerSafe.addOwnerWithThreshold(this.signers.alice.getAddress(), 1);
+        const txn = await contractOwnerSafe.execTransaction(
           addressEncryptedERC20,
           0,
           fnSelector + encodedData2.slice(2),
@@ -199,50 +264,93 @@ describe("Safe", function () {
           // 1000000,
           0,
           this.signers.alice.getAddress(),
-          addressSafe,
+          addressOwnerSafe,
           "0x",
           { gasLimit: 10000000 },
         );
         console.log("Transaction hash:", txn.hash);
         await txn.wait(1);
-        console.log("Transaction successful!");
+        console.log("Wrap and distribute to receiver safes successful!");
       } catch (error) {
-        console.error("Transaction failed:", error);
+        console.error("Wrap and distribute to receiver safes failed:", error);
       }
 
       let newbalanceofcarol = (await contractEncryptedERC20.balanceOf(token.publicKey, this.signers.carol.getAddress())).toString();
-      console.log("new balance of carol: ", + fhevmInstance.alice.decrypt(addressEncryptedERC20, newbalanceofcarol));
 
-      console.log(await contractERC20.balanceOf(addressEncryptedERC20));
+      console.log("ERC20 tokens help by Encrypted20 contract: " + await contractERC20.balanceOf(addressEncryptedERC20) + "\n");
+
+      let claimFnSelector = "0x4e71d92d";
 
       try {
-        const txn = await contractEncryptedERC20.connect(this.signers.bob).claim();
+        const txn = await contractBobSafe.execTransaction(
+          addressEncryptedERC20,
+          0,
+          claimFnSelector,
+          // "0xc6dad082",
+          0,
+          1000000,
+          0,
+          // 1000000,
+          0,
+          this.signers.alice.getAddress(),
+          addressOwnerSafe,
+          "0x",
+          { gasLimit: 10000000 },
+        );
         console.log("Transaction hash:", txn.hash);
         await txn.wait(1);
-        console.log("Transaction successful!");
+        console.log("Claim by Bob safe successful!");
       } catch (error) {
-        console.error("Transaction failed:", error);
+        console.error("Claim by Bob safe failed:", error);
       }
       try {
-        const txn = await contractEncryptedERC20.connect(this.signers.carol).claim();
+        const txn = await contractCarolSafe.execTransaction(
+          addressEncryptedERC20,
+          0,
+          claimFnSelector,
+          // "0xc6dad082",
+          0,
+          1000000,
+          0,
+          // 1000000,
+          0,
+          this.signers.alice.getAddress(),
+          addressOwnerSafe,
+          "0x",
+          { gasLimit: 10000000 },
+        );
         console.log("Transaction hash:", txn.hash);
         await txn.wait(1);
-        console.log("Transaction successful!");
+        console.log("Claim by Carol safe successful!");
       } catch (error) {
-        console.error("Transaction failed:", error);
+        console.error("Claim by Carol safe failed:", error);
       }
       try {
-        const txn = await contractEncryptedERC20.connect(this.signers.dave).claim();
+        const txn = await contractDaveSafe.execTransaction(
+          addressEncryptedERC20,
+          0,
+          claimFnSelector,
+          // "0xc6dad082",
+          0,
+          1000000,
+          0,
+          // 1000000,
+          0,
+          this.signers.alice.getAddress(),
+          addressOwnerSafe,
+          "0x",
+          { gasLimit: 10000000 },
+        );
         console.log("Transaction hash:", txn.hash);
         await txn.wait(1);
-        console.log("Transaction successful!");
+        console.log("Claim by Dave safe successful!");
       } catch (error) {
-        console.error("Transaction failed:", error);
+        console.error("Claim by Dave safe failed:", error);
       }
-
-      console.log(await contractERC20.balanceOf(await this.signers.bob.getAddress()));
-      console.log(await contractERC20.balanceOf(await this.signers.carol.getAddress()));
-      console.log(await contractERC20.balanceOf(await this.signers.dave.getAddress()));
+      
+      console.log("Final ERC20 balance of Bob Safe: " + await contractERC20.balanceOf(addressBobSafe));
+      console.log("Final ERC20 balance of Carol Safe: " + await contractERC20.balanceOf(addressCarolSafe));
+      console.log("Final ERC20 balance of Dave Safe: " + await contractERC20.balanceOf(addressDaveSafe));
     
     });
 });

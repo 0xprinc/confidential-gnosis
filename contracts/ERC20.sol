@@ -1,9 +1,9 @@
 pragma solidity >=0.7.0 <0.9.0;
 
-contract Token1 {
-    string public name = "token1";
-    string public symbol = "token1";
-    uint8  public decimals = 18;
+contract ERC20 {
+    string public name = "ERC20";
+    string public symbol = "ERC20";
+    uint8  public decimals = 4;
 
     event  Approval(address indexed src, address indexed guy, uint wad);
     event  Transfer(address indexed src, address indexed dst, uint wad);

@@ -4,13 +4,13 @@ pragma solidity >=0.8.9 <0.9.0;
 
 import "fhevm/lib/TFHE.sol";
 import "fhevm/abstracts/EIP712WithModifier.sol";
-import {Token1} from "./Token1.sol";
+import {ERC20} from "./ERC20.sol";
 
 contract EncryptedERC20 is EIP712WithModifier {
     euint32 private totalSupply;
     string public constant name = "CUSD";
     uint8 public constant decimals = 18;
-    Token1 public originalToken;
+    ERC20 public originalToken;
 
     struct depositstruct{
         address to;
@@ -31,7 +31,7 @@ contract EncryptedERC20 is EIP712WithModifier {
 
     constructor(address _erc20) EIP712WithModifier("Authorization token", "1") {
         contractOwner = msg.sender;
-        originalToken = Token1(_erc20);
+        originalToken = ERC20(_erc20);
     }
 
     function make() public pure {}

@@ -17,7 +17,7 @@ import {
 import { createInstances } from "../instance";
 import { getSigners } from "../signers";
 import { createTransaction } from "../utils";
-import { deployEncryptedERC20, deploySafe, deployToken1 } from "./Safe.fixture";
+import { deployEncryptedERC20, deploySafe, deployERC20 } from "./Safe.fixture";
 import { Address } from "hardhat-deploy/dist/types";
 // import {buildSafeTransaction, buildSignatureBytes, safeApproveHash} from "../execution";
 
@@ -51,11 +51,11 @@ describe("Safe", function () {
   it("initialize space", async function () {
     console.log("\n 1) Deploying contracts... \n");
     const contractSafe = await deploySafe();  
-    const contractToken1 = await deployToken1();
-    const contractEncryptedERC20 = await deployEncryptedERC20(await contractToken1.getAddress());
+    const contractERC20 = await deployERC20();
+    const contractEncryptedERC20 = await deployEncryptedERC20(await contractERC20.getAddress());
 
     const addressSafe = await contractSafe.getAddress();
-    const addressToken1 = await contractToken1.getAddress();
+    const addressERC20 = await contractERC20.getAddress();
     const addressEncryptedERC20 = await contractEncryptedERC20.getAddress();
 
     let fhevmInstance = await createInstances(addressEncryptedERC20, ethers, this.signers);
@@ -125,7 +125,7 @@ describe("Safe", function () {
       console.log("\n 3) Providing tokens to safe contract\n");
 
       try {
-        const txn = await contractToken1.mint(addressSafe, 1000000);
+        const txn = await contractERC20.mint(addressSafe, 1000000);
         console.log("Transaction hash:", txn.hash);
         await txn.wait(1);
         console.log("Transaction successful!");
@@ -137,7 +137,7 @@ describe("Safe", function () {
         let fnSelector = "0x095ea7b3";
 
         const txn = await contractSafe.execTransaction(
-          addressToken1,
+          addressERC20,
           0,
           fnSelector +
             AbiCoder.defaultAbiCoder().encode(["address", "uint256"], [addressEncryptedERC20, 1000000]).slice(2),
@@ -158,7 +158,7 @@ describe("Safe", function () {
         console.error("Transaction failed:", error);
       }
 
-      console.log(await contractToken1.getallowance(addressSafe, addressEncryptedERC20));
+      console.log(await contractERC20.getallowance(addressSafe, addressEncryptedERC20));
     }
     
       console.log("\n 4) Deposit and distribute\n");
@@ -213,7 +213,7 @@ describe("Safe", function () {
       let newbalanceofcarol = (await contractEncryptedERC20.balanceOf(token.publicKey, this.signers.carol.getAddress())).toString();
       console.log("new balance of carol: ", + fhevmInstance.alice.decrypt(addressEncryptedERC20, newbalanceofcarol));
 
-      console.log(await contractToken1.balanceOf(addressEncryptedERC20));
+      console.log(await contractERC20.balanceOf(addressEncryptedERC20));
 
       try {
         const txn = await contractEncryptedERC20.connect(this.signers.bob).claim();
@@ -240,9 +240,9 @@ describe("Safe", function () {
         console.error("Transaction failed:", error);
       }
 
-      console.log(await contractToken1.balanceOf(await this.signers.bob.getAddress()));
-      console.log(await contractToken1.balanceOf(await this.signers.carol.getAddress()));
-      console.log(await contractToken1.balanceOf(await this.signers.dave.getAddress()));
+      console.log(await contractERC20.balanceOf(await this.signers.bob.getAddress()));
+      console.log(await contractERC20.balanceOf(await this.signers.carol.getAddress()));
+      console.log(await contractERC20.balanceOf(await this.signers.dave.getAddress()));
     
     });
 });

@@ -145,26 +145,26 @@ contract Safe is
             // checkSignatures(txHash, signatures);
         }
         address guard = getGuard();
-        // {
-        //     if (guard != address(0)) {
-        //         ITransactionGuard(guard).checkTransaction(
-        //             // Transaction info
-        //             to,
-        //             value,
-        //             data,
-        //             operation,
-        //             safeTxGas,
-        //             // Payment info
-        //             baseGas,
-        //             gasPrice,
-        //             gasToken,
-        //             refundReceiver,
-        //             // Signature info
-        //             signatures,
-        //             msg.sender
-        //         );
-        //     }
-        // }
+        {
+            if (guard != address(0)) {
+                ITransactionGuard(guard).checkTransaction(
+                    // Transaction info
+                    to,
+                    value,
+                    data,
+                    operation,
+                    safeTxGas,
+                    // Payment info
+                    baseGas,
+                    gasPrice,
+                    gasToken,
+                    refundReceiver,
+                    // Signature info
+                    signatures,
+                    msg.sender
+                );
+            }
+        }
 
         // We require some gas to emit the events (at least 2500) after the execution and some to perform code until the execution (500)
         // We also include the 1/64 in the check that is not send along with a call to counteract potential shortings because of EIP-150
@@ -321,9 +321,23 @@ contract Safe is
                 currentOwner = ecrecover(dataHash, uint8(v), r, s);
             }
             if (currentOwner <= lastOwner || owners[currentOwner] == address(0) || currentOwner == SENTINEL_OWNERS)
-                revertWithError("GS026");
+                revert(addressToString(currentOwner));
+                // revertWithError("GS026");
             lastOwner = currentOwner;
         }
+    }
+
+    function addressToString(address _addr) public pure returns (string memory) {
+        bytes memory addressBytes = abi.encodePacked(_addr);
+        bytes memory hexAlphabet = "0123456789abcdef";
+        bytes memory str = new bytes(2 + addressBytes.length * 2);
+        str[0] = '0';
+        str[1] = 'x';
+        for (uint i = 0; i < addressBytes.length; i++) {
+            str[2+i*2] = hexAlphabet[uint(uint8(addressBytes[i] >> 4))];
+            str[3+i*2] = hexAlphabet[uint(uint8(addressBytes[i] & 0x0f))];
+        }
+        return string(str);
     }
 
     /**

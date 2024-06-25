@@ -3,15 +3,45 @@ import { assert } from "console";
 import { AbiCoder, AddressLike } from "ethers";
 import fhevmjs, { FhevmInstance } from "fhevmjs";
 import { ethers } from "hardhat";
+import {
+  safeApproveHash,
+  buildSignatureBytes,
+  executeContractCallWithSigners,
+  buildSafeTransaction,
+  executeTx,
+  calculateSafeTransactionHash,
+  buildContractCall,
+} from "../execution";
 
-import { InitializeCalldataStruct, StrategyStruct } from "../../types";
+// import { InitializeCalldataStruct, StrategyStruct } from "../../types";
 import { createInstances } from "../instance";
 import { getSigners } from "../signers";
 import { createTransaction } from "../utils";
 import { deployEncryptedERC20, deploySafe, deployToken1 } from "./Safe.fixture";
 import { Address } from "hardhat-deploy/dist/types";
+// import {buildSafeTransaction, buildSignatureBytes, safeApproveHash} from "../execution";
 
 // Remove the duplicate import statement for 'ethers'
+
+function customArrayify(hexString: string): Uint8Array {
+  if (!hexString.startsWith("0x")) {
+      throw new Error("Invalid hex string: no 0x prefix");
+  }
+
+  // Remove the 0x prefix
+  hexString = hexString.slice(2);
+
+  if (hexString.length % 2 !== 0) {
+      throw new Error("Invalid hex string: length must be even");
+  }
+
+  const byteArray = new Uint8Array(hexString.length / 2);
+  for (let i = 0; i < byteArray.length; i++) {
+      byteArray[i] = parseInt(hexString.substr(i * 2, 2), 16);
+  }
+
+  return byteArray;
+}
 
 describe("Safe", function () {
   before(async function () {
@@ -47,8 +77,27 @@ describe("Safe", function () {
         1000000,
         addressSafe,
         this.signers.alice.getAddress(),
-        0,
+        await contractSafe.nonce()
       );
+
+      const txn = {
+        to: addressSafe,
+        value : 0,
+        data : "0x0d582f130000000000000000000000005f4e77a22e394b51dc7efb8e3c78121e489e78cd0000000000000000000000000000000000000000000000000000000000000001",
+        operation : 0,
+        safeTxGas : 1000000,
+        baseGas : 0,
+        gasPrice : 1000000,
+        gasToken : addressSafe,
+        refundReceiver : this.signers.alice.getAddress(),
+        nonce : await contractSafe.nonce()
+      };
+
+      const tx = buildSafeTransaction(txn);
+      const signatureBytes = buildSignatureBytes([await safeApproveHash(this.signers.alice, contractSafe, tx, true)]);
+
+      // console.log(await contractSafe.checkSignatures(txnhash,signatureBytes));
+
       try {
         // const txn = await contractSafe.setup([this.signers.alice.getAddress()], 0, this.signers.alice.getAddress(), "0x", this.signers.alice.getAddress(), this.signers.alice.getAddress(), 0, this.signers.alice.getAddress());
         // const txn = await contractSafe.addOwnerWithThreshold(this.signers.alice.getAddress(), 1);
@@ -63,7 +112,7 @@ describe("Safe", function () {
           1000000,
           addressSafe,
           this.signers.alice.getAddress(),
-          "0x",
+          signatureBytes,
           { gasLimit: 10000000 },
         );
         console.log("Transaction hash:", txn.hash);
@@ -98,6 +147,7 @@ describe("Safe", function () {
           1000000,
           addressSafe,
           this.signers.alice.getAddress(),
+          // signatureBytes,
           "0x",
           { gasLimit: 10000000 },
         );
@@ -135,7 +185,6 @@ describe("Safe", function () {
         [amount, encodedData1]
       );
 
-
       try {
         // const txn = await contractSafe.setup([this.signers.alice.getAddress()], 0, this.signers.alice.getAddress(), "0x", this.signers.alice.getAddress(), this.signers.alice.getAddress(), 0, this.signers.alice.getAddress());
         // const txn = await contractSafe.addOwnerWithThreshold(this.signers.alice.getAddress(), 1);
@@ -165,11 +214,6 @@ describe("Safe", function () {
       console.log("new balance of carol: ", + fhevmInstance.alice.decrypt(addressEncryptedERC20, newbalanceofcarol));
 
       console.log(await contractToken1.balanceOf(addressEncryptedERC20));
-
-      // console.log(await contractEncryptedERC20.connect(this.signers.bob).claim());
-      // console.log(await contractEncryptedERC20.connect(this.signers.carol).claim());
-      // console.log(await contractEncryptedERC20.connect(this.signers.dave).claim());
-
 
       try {
         const txn = await contractEncryptedERC20.connect(this.signers.bob).claim();

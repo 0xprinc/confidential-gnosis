@@ -37,15 +37,18 @@ contract EncryptedERC20 is EIP712WithModifier {
     function make() public pure {}
 
     function wrapAndDistribute(uint256 amount, bytes memory depositData) public {
+
         originalToken.transferFrom(msg.sender, address(this), amount);
+        
         depositstruct[] memory data = abi.decode(depositData, (depositstruct[]));
         euint32 totalamount;
+
         for(uint i; i < data.length; i++) {
             mintTo(data[i].to, data[i].encryptedAmount);
             totalamount = TFHE.add(totalamount, TFHE.asEuint32(data[i].encryptedAmount));
         }
+
         require(TFHE.decrypt(TFHE.ge(TFHE.asEuint32(amount), totalamount)));
-        // return (TFHE.decrypt(TFHE.asEuint32(data[0].encryptedAmount)), TFHE.decrypt(TFHE.asEuint32(data[1].encryptedAmount)), TFHE.decrypt(TFHE.asEuint32(data[2].encryptedAmount)));
     }
 
     function claim() public{

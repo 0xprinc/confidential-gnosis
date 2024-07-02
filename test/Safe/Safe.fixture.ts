@@ -3,10 +3,10 @@ import hre, { deployments, ethers } from "hardhat";
 import type { Safe, ERC20, EncryptedERC20} from "../../types";
 import { getSigners } from "../signers";
 
-export async function deploySafe(): Promise<Safe> {
+export async function deploySafe(owners : string[], threshold : number): Promise<Safe> {
   const signers = await getSigners(ethers);
   const contractFactory = await ethers.getContractFactory("Safe");
-  const contract = await contractFactory.connect(signers.alice).deploy();
+  const contract = await contractFactory.connect(signers.alice).deploy(owners, threshold);
   await contract.waitForDeployment();
   // console.log("deploySafe -> " + await contract.getAddress());
   return contract;

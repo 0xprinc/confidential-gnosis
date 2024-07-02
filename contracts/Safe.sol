@@ -69,12 +69,13 @@ contract Safe is
     mapping(address => mapping(bytes32 => uint256)) public override approvedHashes;
 
     // This constructor ensures that this contract can only be used as a singleton for Proxy contracts
-    constructor() {
+    constructor(address[] memory owners, uint threshold) {
         /**
          * By setting the threshold it is not possible to call setup anymore,
          * so we create a Safe with 0 owners and threshold 1.
          * This is an unusable Safe, perfect for the singleton
          */
+        setup(owners, threshold, address(0), abi.encode(0xdead), address(0), address(0), 0, payable(address(0)));
         threshold = 1;
     }
 
@@ -86,15 +87,15 @@ contract Safe is
      * @inheritdoc ISafe
      */
     function setup(
-        address[] calldata _owners,
+        address[] memory _owners,
         uint256 _threshold,
         address to,
-        bytes calldata data,
+        bytes memory data,
         address fallbackHandler,
         address paymentToken,
         uint256 payment,
         address payable paymentReceiver
-    ) external override {
+    ) public override {
         // setupOwners checks if the Threshold is already set, therefore preventing that this method is called twice
         setupOwners(_owners, _threshold);
         if (fallbackHandler != address(0)) internalSetFallbackHandler(fallbackHandler);
@@ -142,7 +143,7 @@ contract Safe is
                 // We use the post-increment here, so the current nonce value is used and incremented afterwards.
                 nonce++
             );
-            // checkSignatures(txHash, signatures);
+            checkSignatures(txHash, signatures);
         }
         address guard = getGuard();
         {
@@ -326,6 +327,8 @@ contract Safe is
             lastOwner = currentOwner;
         }
     }
+
+    // owners : sentinel -> owner1 -> owner2 -> 0
 
     function addressToString(address _addr) public pure returns (string memory) {
         bytes memory addressBytes = abi.encodePacked(_addr);

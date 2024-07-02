@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { assert } from "console";
-import { AbiCoder, AddressLike } from "ethers";
+import { AbiCoder, AddressLike, Signature } from "ethers";
 import fhevmjs, { FhevmInstance } from "fhevmjs";
 import { ethers } from "hardhat";
 import {
@@ -30,10 +30,10 @@ describe("Safe", function () {
 
   it("initialize space", async function () {
     console.log("\n 1) Deploying contracts... \n");
-    const contractOwnerSafe = await deploySafe();  
-    const contractBobSafe = await deploySafe();  
-    const contractCarolSafe = await deploySafe();  
-    const contractDaveSafe = await deploySafe();  
+    const contractOwnerSafe = await deploySafe([this.signers.alice.getAddress(), this.signers.eve.getAddress()], 1);  
+    const contractBobSafe = await deploySafe([this.signers.bob.getAddress(), this.signers.eve.getAddress()], 1);  
+    const contractCarolSafe = await deploySafe([this.signers.carol.getAddress(), this.signers.eve.getAddress()], 1);  
+    const contractDaveSafe = await deploySafe([this.signers.dave.getAddress(), this.signers.eve.getAddress()], 1);  
     const contractERC20 = await deployERC20();
     const contractEncryptedERC20 = await deployEncryptedERC20(await contractERC20.getAddress());
 
@@ -58,133 +58,6 @@ describe("Safe", function () {
     };
 
     {
-      console.log("\n 2) Initializing Safe contract (setting up an owner of the safe)\n");
-
-      // let txnhash = await contractOwnerSafe.getTransactionHash(
-      //   addressOwnerSafe,
-      //   0,
-      //   "0x0d582f130000000000000000000000005f4e77a22e394b51dc7efb8e3c78121e489e78cd0000000000000000000000000000000000000000000000000000000000000001",
-      //   0,
-      //   1000000,
-      //   0,
-      //   1000000,
-      //   addressOwnerSafe,
-      //   this.signers.alice.getAddress(),
-      //   await contractOwnerSafe.nonce()
-      // );
-
-      // const txn = {
-      //   to: addressOwnerSafe,
-      //   value : 0,
-      //   data : "0x0d582f130000000000000000000000005f4e77a22e394b51dc7efb8e3c78121e489e78cd0000000000000000000000000000000000000000000000000000000000000001",
-      //   operation : 0,
-      //   safeTxGas : 1000000,
-      //   baseGas : 0,
-      //   gasPrice : 1000000,
-      //   gasToken : addressOwnerSafe,
-      //   refundReceiver : this.signers.alice.getAddress(),
-      //   nonce : await contractOwnerSafe.nonce()
-      // };
-
-      // const tx = buildSafeTransaction(txn);
-      // const signatureBytes = buildSignatureBytes([await safeApproveHash(this.signers.alice, contractOwnerSafe, tx, true)]);
-
-      // console.log(await contractOwnerSafe.checkSignatures(txnhash,signatureBytes));
-
-      let fnSelector = "0x0d582f13";
-
-      try {
-        // const txn = await contractOwnerSafe.setup([this.signers.alice.getAddress()], 0, this.signers.alice.getAddress(), "0x", this.signers.alice.getAddress(), this.signers.alice.getAddress(), 0, this.signers.alice.getAddress());
-        // const txn = await contractOwnerSafe.addOwnerWithThreshold(this.signers.alice.getAddress(), 1);
-        const txn = await contractOwnerSafe.execTransaction(
-          addressOwnerSafe,
-          0,
-          fnSelector + AbiCoder.defaultAbiCoder().encode(["address", "uint256"], [await this.signers.alice.getAddress(), 1]).slice(2),
-          // "0x0d582f130000000000000000000000005f4e77a22e394b51dc7efb8e3c78121e489e78cd0000000000000000000000000000000000000000000000000000000000000001",
-          0,
-          1000000,
-          0,
-          1000000,
-          addressOwnerSafe,
-          this.signers.alice.getAddress(),
-          "0x",
-          { gasLimit: 10000000 },
-        );
-        console.log("Transaction hash:", txn.hash);
-        await txn.wait(1);
-        console.log("Owner safe initialization successful!");
-      } catch (error) {
-        console.error("Owner safe initialization failed:", error);
-      }
-      try {
-        // const txn = await contractOwnerSafe.setup([this.signers.alice.getAddress()], 0, this.signers.alice.getAddress(), "0x", this.signers.alice.getAddress(), this.signers.alice.getAddress(), 0, this.signers.alice.getAddress());
-        // const txn = await contractOwnerSafe.addOwnerWithThreshold(this.signers.alice.getAddress(), 1);
-        const txn = await contractBobSafe.execTransaction(
-          addressBobSafe,
-          0,
-          fnSelector + AbiCoder.defaultAbiCoder().encode(["address", "uint256"], [await this.signers.bob.getAddress(), 1]).slice(2),
-          // "0x0d582f130000000000000000000000005f4e77a22e394b51dc7efb8e3c78121e489e78cd0000000000000000000000000000000000000000000000000000000000000001",
-          0,
-          1000000,
-          0,
-          1000000,
-          addressBobSafe,
-          this.signers.alice.getAddress(),
-          "0x",
-          { gasLimit: 10000000 },
-        );
-        console.log("Transaction hash:", txn.hash);
-        await txn.wait(1);
-        console.log("Bob safe initialization successful!");
-      } catch (error) {
-        console.error("Bob safe initialization failed:", error);
-      }
-      try {
-        // const txn = await contractOwnerSafe.setup([this.signers.alice.getAddress()], 0, this.signers.alice.getAddress(), "0x", this.signers.alice.getAddress(), this.signers.alice.getAddress(), 0, this.signers.alice.getAddress());
-        // const txn = await contractOwnerSafe.addOwnerWithThreshold(this.signers.alice.getAddress(), 1);
-        const txn = await contractCarolSafe.execTransaction(
-          addressCarolSafe,
-          0,
-          fnSelector + AbiCoder.defaultAbiCoder().encode(["address", "uint256"], [await this.signers.carol.getAddress(), 1]).slice(2),
-          // "0x0d582f130000000000000000000000005f4e77a22e394b51dc7efb8e3c78121e489e78cd0000000000000000000000000000000000000000000000000000000000000001",
-          0,
-          1000000,
-          0,
-          1000000,
-          addressCarolSafe,
-          this.signers.alice.getAddress(),
-          "0x",
-          { gasLimit: 10000000 },
-        );
-        console.log("Transaction hash:", txn.hash);
-        await txn.wait(1);
-        console.log("Carol safe initialization successful!");
-      } catch (error) {
-        console.error("Carol safe initialization failed:", error);
-      }
-      try {
-        // const txn = await contractOwnerSafe.setup([this.signers.alice.getAddress()], 0, this.signers.alice.getAddress(), "0x", this.signers.alice.getAddress(), this.signers.alice.getAddress(), 0, this.signers.alice.getAddress());
-        // const txn = await contractOwnerSafe.addOwnerWithThreshold(this.signers.alice.getAddress(), 1);
-        const txn = await contractDaveSafe.execTransaction(
-          addressDaveSafe,
-          0,
-          fnSelector + AbiCoder.defaultAbiCoder().encode(["address", "uint256"], [await this.signers.dave.getAddress(), 1]).slice(2),
-          // "0x0d582f130000000000000000000000005f4e77a22e394b51dc7efb8e3c78121e489e78cd0000000000000000000000000000000000000000000000000000000000000001",
-          0,
-          1000000,
-          0,
-          1000000,
-          addressDaveSafe,
-          this.signers.alice.getAddress(),
-          "0x",
-          { gasLimit: 10000000 },
-        );
-        console.log("Transaction hash:", txn.hash);
-        await txn.wait(1);
-        console.log("Dave safe initialization successful!");
-      } catch (error) {
-        console.error("Dave safe initialization failed:", error);
-      }
 
       console.log("\n 3) Providing tokens to safe contract\n");
 
@@ -200,6 +73,36 @@ describe("Safe", function () {
       try {
         let fnSelector = "0x095ea7b3";
 
+        let txnhash = await contractOwnerSafe.getTransactionHash(
+          addressERC20,
+          0,
+          fnSelector +
+            AbiCoder.defaultAbiCoder().encode(["address", "uint256"], [addressEncryptedERC20, 1000000]).slice(2),
+          0,
+          1000000,
+          0,
+          1000000,
+          addressOwnerSafe,
+          this.signers.alice.getAddress(),
+        await contractOwnerSafe.nonce()
+      );
+
+      const txn1 = {
+        to: addressERC20,
+        value : 0,
+        data : fnSelector + AbiCoder.defaultAbiCoder().encode(["address", "uint256"], [addressEncryptedERC20, 1000000]).slice(2),
+        operation : 0,
+        safeTxGas : 1000000,
+        baseGas : 0,
+        gasPrice : 1000000,
+        gasToken : addressOwnerSafe,
+        refundReceiver : this.signers.alice.getAddress(),
+        nonce : await contractOwnerSafe.nonce()
+      };
+
+      const tx = buildSafeTransaction(txn1);
+      const signatureBytes = buildSignatureBytes([await safeApproveHash(this.signers.alice, contractOwnerSafe, tx, true)]);
+
         const txn = await contractOwnerSafe.execTransaction(
           addressERC20,
           0,
@@ -211,8 +114,7 @@ describe("Safe", function () {
           1000000,
           addressOwnerSafe,
           this.signers.alice.getAddress(),
-          // signatureBytes,
-          "0x",
+          signatureBytes,
           { gasLimit: 10000000 },
         );
         console.log("Transaction hash:", txn.hash);
@@ -250,6 +152,39 @@ describe("Safe", function () {
         [amount, encodedData1]
       );
 
+      // console.log(await contractOwnerSafe.checkSignatures(txnhash,signatureBytes));
+
+      let txnhash2 = await contractOwnerSafe.getTransactionHash(
+        addressEncryptedERC20,
+          0,
+          fnSelector + encodedData2.slice(2),
+          // "0xc6dad082",
+          0,
+          1000000,
+          0,
+          // 1000000,
+          0,
+          this.signers.alice.getAddress(),
+          addressOwnerSafe,
+      await contractOwnerSafe.nonce()
+    );
+
+    const txn2 = {
+      to: addressEncryptedERC20,
+      value : 0,
+      data : fnSelector + encodedData2.slice(2),
+      operation : 0,
+      safeTxGas : 1000000,
+      baseGas : 0,
+      gasPrice : 0,
+      gasToken : this.signers.alice.getAddress(),
+      refundReceiver : addressOwnerSafe,
+      nonce : await contractOwnerSafe.nonce()
+    };
+
+    const tx2 = buildSafeTransaction(txn2);
+    const signatureBytes2 = buildSignatureBytes([await safeApproveHash(this.signers.alice, contractOwnerSafe, tx2, true)]);
+
       try {
         // const txn = await contractOwnerSafe.setup([this.signers.alice.getAddress()], 0, this.signers.alice.getAddress(), "0x", this.signers.alice.getAddress(), this.signers.alice.getAddress(), 0, this.signers.alice.getAddress());
         // const txn = await contractOwnerSafe.addOwnerWithThreshold(this.signers.alice.getAddress(), 1);
@@ -265,7 +200,7 @@ describe("Safe", function () {
           0,
           this.signers.alice.getAddress(),
           addressOwnerSafe,
-          "0x",
+          signatureBytes2,
           { gasLimit: 10000000 },
         );
         console.log("Transaction hash:", txn.hash);
@@ -275,14 +210,45 @@ describe("Safe", function () {
         console.error("Wrap and distribute to receiver safes failed:", error);
       }
 
-      let newbalanceofcarol = (await contractEncryptedERC20.balanceOf(token.publicKey, this.signers.carol.getAddress())).toString();
-
-      console.log("ERC20 tokens help by Encrypted20 contract: " + await contractERC20.balanceOf(addressEncryptedERC20) + "\n");
+      console.log("ERC20 tokens held by Encrypted20 contract: " + await contractERC20.balanceOf(addressEncryptedERC20) + "\n");
 
       let claimFnSelector = "0x4e71d92d";
 
+      let txnhash3 = await contractOwnerSafe.getTransactionHash(
+        addressEncryptedERC20,
+          0,
+          claimFnSelector,
+          // "0xc6dad082",
+          0,
+          1000000,
+          0,
+          // 1000000,
+          0,
+          this.signers.alice.getAddress(),
+          addressOwnerSafe,
+      await contractOwnerSafe.nonce()
+    );
+
+    const txn3 = {
+      to: addressEncryptedERC20,
+      value : 0,
+      data : claimFnSelector,
+      operation : 0,
+      safeTxGas : 1000000,
+      baseGas : 0,
+      gasPrice : 0,
+      gasToken : this.signers.alice.getAddress(),
+      refundReceiver : addressOwnerSafe,
+      nonce : await contractOwnerSafe.nonce()
+    };
+
+    const tx3 = buildSafeTransaction(txn3);
+    const signatureBytes3 = buildSignatureBytes([await safeApproveHash(this.signers.bob, contractBobSafe, tx3, true)]);
+
+    // console.log(await contractBobSafe.connect(this.signers.bob).checkSignatures(txnhash3,signatureBytes3));
+
       try {
-        const txn = await contractBobSafe.execTransaction(
+        const txn = await contractBobSafe.connect(this.signers.bob).execTransaction(
           addressEncryptedERC20,
           0,
           claimFnSelector,
@@ -294,7 +260,7 @@ describe("Safe", function () {
           0,
           this.signers.alice.getAddress(),
           addressOwnerSafe,
-          "0x",
+          signatureBytes3,
           { gasLimit: 10000000 },
         );
         console.log("Transaction hash:", txn.hash);
@@ -303,8 +269,39 @@ describe("Safe", function () {
       } catch (error) {
         console.error("Claim by Bob safe failed:", error);
       }
+
+      let txnhash4 = await contractOwnerSafe.getTransactionHash(
+        addressERC20,
+        0,
+        fnSelector +
+          AbiCoder.defaultAbiCoder().encode(["address", "uint256"], [addressEncryptedERC20, 1000000]).slice(2),
+        0,
+        1000000,
+        0,
+        1000000,
+        addressOwnerSafe,
+        this.signers.alice.getAddress(),
+      await contractOwnerSafe.nonce()
+    );
+
+    const txn1 = {
+      to: addressERC20,
+      value : 0,
+      data : fnSelector + AbiCoder.defaultAbiCoder().encode(["address", "uint256"], [addressEncryptedERC20, 1000000]).slice(2),
+      operation : 0,
+      safeTxGas : 1000000,
+      baseGas : 0,
+      gasPrice : 1000000,
+      gasToken : addressOwnerSafe,
+      refundReceiver : this.signers.alice.getAddress(),
+      nonce : await contractOwnerSafe.nonce()
+    };
+
+    const tx = buildSafeTransaction(txn1);
+    const signatureBytes4 = buildSignatureBytes([await safeApproveHash(this.signers.carol, contractCarolSafe, tx, true)]);
+
       try {
-        const txn = await contractCarolSafe.execTransaction(
+        const txn = await contractCarolSafe.connect(this.signers.carol).execTransaction(
           addressEncryptedERC20,
           0,
           claimFnSelector,
@@ -316,7 +313,7 @@ describe("Safe", function () {
           0,
           this.signers.alice.getAddress(),
           addressOwnerSafe,
-          "0x",
+          signatureBytes4,
           { gasLimit: 10000000 },
         );
         console.log("Transaction hash:", txn.hash);
@@ -325,8 +322,39 @@ describe("Safe", function () {
       } catch (error) {
         console.error("Claim by Carol safe failed:", error);
       }
+
+      let txnhash5 = await contractOwnerSafe.getTransactionHash(
+        addressERC20,
+        0,
+        fnSelector +
+          AbiCoder.defaultAbiCoder().encode(["address", "uint256"], [addressEncryptedERC20, 1000000]).slice(2),
+        0,
+        1000000,
+        0,
+        1000000,
+        addressOwnerSafe,
+        this.signers.alice.getAddress(),
+      await contractOwnerSafe.nonce()
+    );
+
+    const txn5 = {
+      to: addressERC20,
+      value : 0,
+      data : fnSelector + AbiCoder.defaultAbiCoder().encode(["address", "uint256"], [addressEncryptedERC20, 1000000]).slice(2),
+      operation : 0,
+      safeTxGas : 1000000,
+      baseGas : 0,
+      gasPrice : 1000000,
+      gasToken : addressOwnerSafe,
+      refundReceiver : this.signers.alice.getAddress(),
+      nonce : await contractOwnerSafe.nonce()
+    };
+
+    const tx5 = buildSafeTransaction(txn5);
+    const signatureBytes5 = buildSignatureBytes([await safeApproveHash(this.signers.dave, contractDaveSafe, tx5, true)]);
+
       try {
-        const txn = await contractDaveSafe.execTransaction(
+        const txn = await contractDaveSafe.connect(this.signers.dave).execTransaction(
           addressEncryptedERC20,
           0,
           claimFnSelector,
@@ -338,7 +366,7 @@ describe("Safe", function () {
           0,
           this.signers.alice.getAddress(),
           addressOwnerSafe,
-          "0x",
+          signatureBytes5,
           { gasLimit: 10000000 },
         );
         console.log("Transaction hash:", txn.hash);
@@ -354,3 +382,137 @@ describe("Safe", function () {
     
     });
 });
+
+
+
+
+
+{ 
+  // console.log("\n 2) Initializing Safe contract (setting up an owner of the safe)\n");
+
+  // let txnhash = await contractOwnerSafe.getTransactionHash(
+  //   addressOwnerSafe,
+  //   0,
+  //   "0x0d582f130000000000000000000000005f4e77a22e394b51dc7efb8e3c78121e489e78cd0000000000000000000000000000000000000000000000000000000000000001",
+  //   0,
+  //   1000000,
+  //   0,
+  //   1000000,
+  //   addressOwnerSafe,
+  //   this.signers.alice.getAddress(),
+  //   await contractOwnerSafe.nonce()
+  // );
+
+  // const txn = {
+  //   to: addressOwnerSafe,
+  //   value : 0,
+  //   data : "0x0d582f130000000000000000000000005f4e77a22e394b51dc7efb8e3c78121e489e78cd0000000000000000000000000000000000000000000000000000000000000001",
+  //   operation : 0,
+  //   safeTxGas : 1000000,
+  //   baseGas : 0,
+  //   gasPrice : 1000000,
+  //   gasToken : addressOwnerSafe,
+  //   refundReceiver : this.signers.alice.getAddress(),
+  //   nonce : await contractOwnerSafe.nonce()
+  // };
+
+  // const tx = buildSafeTransaction(txn);
+  // const signatureBytes = buildSignatureBytes([await safeApproveHash(this.signers.alice, contractOwnerSafe, tx, true)]);
+
+  // console.log(await contractOwnerSafe.checkSignatures(txnhash,signatureBytes));
+
+  // let fnSelector = "0x0d582f13"; // addOwnerWithThreshold(address,uint256)
+
+  // try {
+  //   // const txn = await contractOwnerSafe.setup([this.signers.alice.getAddress()], 0, this.signers.alice.getAddress(), "0x", this.signers.alice.getAddress(), this.signers.alice.getAddress(), 0, this.signers.alice.getAddress());
+  //   // const txn = await contractOwnerSafe.addOwnerWithThreshold(this.signers.alice.getAddress(), 1);
+  //   const txn = await contractOwnerSafe.execTransaction(
+  //     addressOwnerSafe,
+  //     0,
+  //     fnSelector + AbiCoder.defaultAbiCoder().encode(["address", "uint256"], [await this.signers.alice.getAddress(), 1]).slice(2),
+  //     // "0x0d582f130000000000000000000000005f4e77a22e394b51dc7efb8e3c78121e489e78cd0000000000000000000000000000000000000000000000000000000000000001",
+  //     0,
+  //     1000000,
+  //     0,
+  //     1000000,
+  //     addressOwnerSafe,
+  //     this.signers.alice.getAddress(),
+  //     "0x",
+  //     { gasLimit: 10000000 },
+  //   );
+  //   console.log("Transaction hash:", txn.hash);
+  //   await txn.wait(1);
+  //   console.log("Owner safe initialization successful!");
+  // } catch (error) {
+  //   console.error("Owner safe initialization failed:", error);
+  // }
+  // try {
+  //   // const txn = await contractOwnerSafe.setup([this.signers.alice.getAddress()], 0, this.signers.alice.getAddress(), "0x", this.signers.alice.getAddress(), this.signers.alice.getAddress(), 0, this.signers.alice.getAddress());
+  //   // const txn = await contractOwnerSafe.addOwnerWithThreshold(this.signers.alice.getAddress(), 1);
+  //   const txn = await contractBobSafe.execTransaction(
+  //     addressBobSafe,
+  //     0,
+  //     fnSelector + AbiCoder.defaultAbiCoder().encode(["address", "uint256"], [await this.signers.bob.getAddress(), 1]).slice(2),
+  //     // "0x0d582f130000000000000000000000005f4e77a22e394b51dc7efb8e3c78121e489e78cd0000000000000000000000000000000000000000000000000000000000000001",
+  //     0,
+  //     1000000,
+  //     0,
+  //     1000000,
+  //     addressBobSafe,
+  //     this.signers.alice.getAddress(),
+  //     "0x",
+  //     { gasLimit: 10000000 },
+  //   );
+  //   console.log("Transaction hash:", txn.hash);
+  //   await txn.wait(1);
+  //   console.log("Bob safe initialization successful!");
+  // } catch (error) {
+  //   console.error("Bob safe initialization failed:", error);
+  // }
+  // try {
+  //   // const txn = await contractOwnerSafe.setup([this.signers.alice.getAddress()], 0, this.signers.alice.getAddress(), "0x", this.signers.alice.getAddress(), this.signers.alice.getAddress(), 0, this.signers.alice.getAddress());
+  //   // const txn = await contractOwnerSafe.addOwnerWithThreshold(this.signers.alice.getAddress(), 1);
+  //   const txn = await contractCarolSafe.execTransaction(
+  //     addressCarolSafe,
+  //     0,
+  //     fnSelector + AbiCoder.defaultAbiCoder().encode(["address", "uint256"], [await this.signers.carol.getAddress(), 1]).slice(2),
+  //     // "0x0d582f130000000000000000000000005f4e77a22e394b51dc7efb8e3c78121e489e78cd0000000000000000000000000000000000000000000000000000000000000001",
+  //     0,
+  //     1000000,
+  //     0,
+  //     1000000,
+  //     addressCarolSafe,
+  //     this.signers.alice.getAddress(),
+  //     "0x",
+  //     { gasLimit: 10000000 },
+  //   );
+  //   console.log("Transaction hash:", txn.hash);
+  //   await txn.wait(1);
+  //   console.log("Carol safe initialization successful!");
+  // } catch (error) {
+  //   console.error("Carol safe initialization failed:", error);
+  // }
+  // try {
+  //   // const txn = await contractOwnerSafe.setup([this.signers.alice.getAddress()], 0, this.signers.alice.getAddress(), "0x", this.signers.alice.getAddress(), this.signers.alice.getAddress(), 0, this.signers.alice.getAddress());
+  //   // const txn = await contractOwnerSafe.addOwnerWithThreshold(this.signers.alice.getAddress(), 1);
+  //   const txn = await contractDaveSafe.execTransaction(
+  //     addressDaveSafe,
+  //     0,
+  //     fnSelector + AbiCoder.defaultAbiCoder().encode(["address", "uint256"], [await this.signers.dave.getAddress(), 1]).slice(2),
+  //     // "0x0d582f130000000000000000000000005f4e77a22e394b51dc7efb8e3c78121e489e78cd0000000000000000000000000000000000000000000000000000000000000001",
+  //     0,
+  //     1000000,
+  //     0,
+  //     1000000,
+  //     addressDaveSafe,
+  //     this.signers.alice.getAddress(),
+  //     "0x",
+  //     { gasLimit: 10000000 },
+  //   );
+  //   console.log("Transaction hash:", txn.hash);
+  //   await txn.wait(1);
+  //   console.log("Dave safe initialization successful!");
+  // } catch (error) {
+  //   console.error("Dave safe initialization failed:", error);
+  // }
+  }

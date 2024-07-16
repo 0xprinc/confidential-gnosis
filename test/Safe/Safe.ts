@@ -26,6 +26,13 @@ describe("Safe", function () {
   });
 
   it("initialize space", async function () {
+
+    console.log(this.signers.alice.getAddress());
+    console.log(this.signers.bob.getAddress());
+    console.log(this.signers.carol.getAddress());
+    console.log(this.signers.dave.getAddress());
+
+
     console.log("\n 1) Deploying contracts... \n");
     const contractOwnerSafe = await deploySafe([this.signers.alice.getAddress(), this.signers.eve.getAddress()], 1);
     const contractBobSafe = await deploySafe([this.signers.bob.getAddress(), this.signers.eve.getAddress()], 1);
@@ -41,15 +48,20 @@ describe("Safe", function () {
     const addressERC20 = await contractERC20.getAddress();
     const addressEncryptedERC20 = await contractEncryptedERC20.getAddress();
 
-    console.log("owner safe address: " + addressOwnerSafe);
-    console.log("bob safe address: " + addressBobSafe);
-    console.log("carol safe address: " + addressCarolSafe);
-    console.log("dave safe address: " + addressDaveSafe);
-    console.log("erc20 address: " + addressERC20);
-    console.log("encrypted erc20 address: " + addressEncryptedERC20);
-
     let fhevmInstance = await createInstances(addressEncryptedERC20, ethers, this.signers);
-    const token = fhevmInstance.alice.getPublicKey(addressEncryptedERC20) || {
+    const tokenalice = fhevmInstance.alice.getPublicKey(addressEncryptedERC20) || {
+      signature: "",
+      publicKey: "",
+    };
+    const tokenbob = fhevmInstance.bob.getPublicKey(addressEncryptedERC20) || {
+      signature: "",
+      publicKey: "",
+    };
+    const tokencarol = fhevmInstance.carol.getPublicKey(addressEncryptedERC20) || {
+      signature: "",
+      publicKey: "",
+    };
+    const tokendave = fhevmInstance.dave.getPublicKey(addressEncryptedERC20) || {
       signature: "",
       publicKey: "",
     };
@@ -210,6 +222,15 @@ describe("Safe", function () {
     console.log(
       "ERC20 tokens held by Encrypted20 contract: " + (await contractERC20.balanceOf(addressEncryptedERC20)) + "\n",
     );
+
+    // let a = await contractEncryptedERC20.connect(this.signers.bob).balanceOf(tokenbob.publicKey, addressBobSafe);
+    // let b = await contractEncryptedERC20.connect(this.signers.carol).balanceOf(tokencarol.publicKey, addressCarolSafe);
+    // let c = await contractEncryptedERC20.connect(this.signers.dave).balanceOf(tokendave.publicKey, addressDaveSafe);
+
+    // console.log(fhevmInstance.bob.decrypt(addressEncryptedERC20, a));
+    // console.log(fhevmInstance.carol.decrypt(addressEncryptedERC20, b));
+    // console.log(fhevmInstance.dave.decrypt(addressEncryptedERC20, c));
+    
 
     let claimFnSelector = "0x4e71d92d";
 

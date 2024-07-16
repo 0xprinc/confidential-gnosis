@@ -5,6 +5,7 @@ pragma solidity >=0.8.9 <0.9.0;
 import "fhevm/lib/TFHE.sol";
 import "fhevm/abstracts/EIP712WithModifier.sol";
 import {ERC20} from "./ERC20.sol";
+import {OwnerManager} from "./base/OwnerManager.sol";
 
 contract EncryptedERC20 is EIP712WithModifier {
     euint32 private totalSupply;
@@ -108,6 +109,9 @@ contract EncryptedERC20 is EIP712WithModifier {
         view
         returns (bytes memory)
     {
+        require( msg.sender == user || 
+        OwnerManager(user).isOwner(msg.sender)
+        );
         return TFHE.reencrypt(balances[user], publicKey, 0);
     }
 

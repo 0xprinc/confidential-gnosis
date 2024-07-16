@@ -48,6 +48,13 @@ describe("Safe", function () {
     const addressERC20 = await contractERC20.getAddress();
     const addressEncryptedERC20 = await contractEncryptedERC20.getAddress();
 
+    console.log("Owner Safe address: " + addressOwnerSafe);
+    console.log("Bob Safe address: " + addressBobSafe);
+    console.log("Carol Safe address: " + addressCarolSafe);
+    console.log("Dave Safe address: " + addressDaveSafe);
+    console.log("ERC20 address: " + addressERC20);
+    console.log("EncryptedERC20 address: " + addressEncryptedERC20);
+
     let fhevmInstance = await createInstances(addressEncryptedERC20, ethers, this.signers);
     const tokenalice = fhevmInstance.alice.getPublicKey(addressEncryptedERC20) || {
       signature: "",
@@ -223,13 +230,13 @@ describe("Safe", function () {
       "ERC20 tokens held by Encrypted20 contract: " + (await contractERC20.balanceOf(addressEncryptedERC20)) + "\n",
     );
 
-    // let a = await contractEncryptedERC20.connect(this.signers.bob).balanceOf(tokenbob.publicKey, addressBobSafe);
-    // let b = await contractEncryptedERC20.connect(this.signers.carol).balanceOf(tokencarol.publicKey, addressCarolSafe);
-    // let c = await contractEncryptedERC20.connect(this.signers.dave).balanceOf(tokendave.publicKey, addressDaveSafe);
+    let a = await contractEncryptedERC20.connect(this.signers.bob).balanceOf(tokenbob.publicKey, addressBobSafe);
+    let b = await contractEncryptedERC20.connect(this.signers.carol).balanceOf(tokencarol.publicKey, addressCarolSafe);
+    let c = await contractEncryptedERC20.connect(this.signers.dave).balanceOf(tokendave.publicKey, addressDaveSafe);
 
-    // console.log(fhevmInstance.bob.decrypt(addressEncryptedERC20, a));
-    // console.log(fhevmInstance.carol.decrypt(addressEncryptedERC20, b));
-    // console.log(fhevmInstance.dave.decrypt(addressEncryptedERC20, c));
+    console.log(fhevmInstance.bob.decrypt(addressEncryptedERC20, a));
+    console.log(fhevmInstance.carol.decrypt(addressEncryptedERC20, b));
+    console.log(fhevmInstance.dave.decrypt(addressEncryptedERC20, c));
     
 
     let claimFnSelector = "0x4e71d92d";
